@@ -1,0 +1,29 @@
+.site-footer {
+  align-items: center;
+  border-top: 1px solid var(--border);
+  color: var(--text);
+  display: flex;
+  font-size: 0.875rem;
+  justify-content: space-between;
+  padding: 20px 28px;
+  background-color: var(--primary-dark);
+}
+
+.site-footer p {
+  margin: 0;
+}
+
+.site-footer a {
+  color: rgb(241, 242, 244);
+  text-decoration: none;
+}
+
+.site-footer a:hover {
+  color: var(--accent);
+}
+
+@media (max-width: 600px) {
+  .site-footer {
+    padding: 18px;
+  }
+}

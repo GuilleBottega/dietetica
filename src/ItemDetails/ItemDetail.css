@@ -1,0 +1,11 @@
+.detail-wrapper {
+  max-width: 20rem;
+  margin: auto;
+}
+
+.detail-wrapper .card p:first-of-type {
+  display: block;
+  overflow: visible;
+  line-clamp: unset;
+  -webkit-box-orient: initial;
+}

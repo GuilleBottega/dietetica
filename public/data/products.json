@@ -1,0 +1,138 @@
+[
+  {
+    "id": 1,
+    "name": "Almendras",
+    "description": "Almendras naturales, fuente de fibra y grasas saludables.",
+    "price": 2500,
+    "image": "/img/almendras.jpg",
+    "category": "Frutos secos"
+  },
+  {
+    "id": 2,
+    "name": "Avena",
+    "description": "Avena ideal para desayunos, licuados y preparaciones caseras.",
+    "price": 1800,
+    "image": "/img/avena.jpg",
+    "category": "Cereales"
+  },
+  {
+    "id": 3,
+    "name": "Barrita",
+    "description": "Barrita práctica para disfrutar como colación durante el día.",
+    "price": 1200,
+    "image": "/img/barrita.jpg",
+    "category": "Colaciones"
+  },
+  {
+    "id": 4,
+    "name": "Chía",
+    "description": "Semillas de chía, una opción nutritiva para sumar a tus comidas.",
+    "price": 2200,
+    "image": "/img/chia.jpg",
+    "category": "Semillas"
+  },
+  {
+    "id": 5,
+    "name": "Coco",
+    "description": "Coco deshidratado para recetas dulces y saladas.",
+    "price": 2000,
+    "image": "/img/coco.jpg",
+    "category": "Frutas deshidratadas"
+  },
+  {
+    "id": 6,
+    "name": "Copos de maíz",
+    "description": "Copos de maíz crocantes para acompañar tus desayunos.",
+    "price": 1700,
+    "image": "/img/copo de maiz.jpg",
+    "category": "Cereales"
+  },
+  {
+    "id": 7,
+    "name": "Crema de maní",
+    "description": "Crema de maní suave y untuosa, sin conservantes agregados.",
+    "price": 3200,
+    "image": "/img/crema de mani.jpg",
+    "category": "Untables"
+  },
+  {
+    "id": 8,
+    "name": "Dátiles",
+    "description": "Dátiles naturalmente dulces, ideales para snacks y recetas.",
+    "price": 2800,
+    "image": "/img/datiles.jpg",
+    "category": "Frutas deshidratadas"
+  },
+  {
+    "id": 9,
+    "name": "Galletitas",
+    "description": "Galletitas integrales para acompañar tus momentos de descanso.",
+    "price": 2100,
+    "image": "/img/galletitas.jpg",
+    "category": "Colaciones"
+  },
+  {
+    "id": 10,
+    "name": "Harina integral",
+    "description": "Harina integral para panes, tortas y otras preparaciones.",
+    "price": 1600,
+    "image": "/img/harina integral.jpg",
+    "category": "Harinas"
+  },
+  {
+    "id": 11,
+    "name": "Legumbres",
+    "description": "Selección de legumbres secas para una alimentación variada.",
+    "price": 1900,
+    "image": "/img/legumbres.jpg",
+    "category": "Legumbres"
+  },
+  {
+    "id": 12,
+    "name": "Membrillo",
+    "description": "Dulce de membrillo para acompañar desayunos y meriendas.",
+    "price": 2300,
+    "image": "/img/membrillo.jpg",
+    "category": "Dulces"
+  },
+  {
+    "id": 13,
+    "name": "Mermelada",
+    "description": "Mermelada frutal para untar y acompañar tus comidas.",
+    "price": 2400,
+    "image": "/img/mermelada.jpg",
+    "category": "Dulces"
+  },
+  {
+    "id": 14,
+    "name": "Nuez",
+    "description": "Nueces seleccionadas, fuente de nutrientes y grasas saludables.",
+    "price": 3500,
+    "image": "/img/nuez.jpg",
+    "category": "Frutos secos"
+  },
+  {
+    "id": 15,
+    "name": "Pasas de uva",
+    "description": "Pasas de uva dulces para consumir solas o sumar a tus recetas.",
+    "price": 2300,
+    "image": "/img/pasas de uva.jpg",
+    "category": "Frutas deshidratadas"
+  },
+  {
+    "id": 16,
+    "name": "Pistachos",
+    "description": "Pistachos crocantes para disfrutar como snack saludable.",
+    "price": 3900,
+    "image": "/img/pistachos.jpg",
+    "category": "Frutos secos"
+  },
+  {
+    "id": 17,
+    "name": "Stevia",
+    "description": "Endulzante a base de stevia para tus bebidas y preparaciones.",
+    "price": 2600,
+    "image": "/img/stevia.jpg",
+    "category": "Endulzantes"
+  }
+]
