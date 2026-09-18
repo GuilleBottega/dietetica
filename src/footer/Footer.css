@@ -10,11 +10,11 @@
 }
 
 .site-footer p {
-  margin: 0;
+  margin: 1;
 }
 
 .site-footer a {
-  color: rgb(241, 242, 244);
+  color: rgb(191, 204, 228);
   text-decoration: none;
 }
 
