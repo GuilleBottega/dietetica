@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import { ItemList } from "../ItemList/ItemList";
 
 export const ItemListContainer = () => {
+  const { category } = useParams();
   const [products, setProducts] = useState([]);
   const [errors, setErrors] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -23,10 +25,14 @@ export const ItemListContainer = () => {
   if (loading) return <p>Cargando...</p>;
   if (errors) return <p>{errors}</p>;
 
+  const visibleProducts = category
+    ? products.filter((product) => product.category === category)
+    : products;
+
   return (
     <section>
-      <h1>Productos</h1>
-      <ItemList products={products} />
+      <h1>{category || "Productos"}</h1>
+      <ItemList products={visibleProducts} />
     </section>
   );
 };

@@ -1,17 +1,64 @@
+nav {
+  width: 100%;
+  padding: 14px clamp(16px, 4vw, 48px);
+  background: rgba(255, 255, 255, 0.82);
+  border-bottom: 1px solid rgba(47, 118, 87, 0.16);
+  box-shadow: 0 8px 20px rgba(33, 72, 52, 0.07);
+  backdrop-filter: blur(12px);
+}
+
 .nav-list {
   list-style: none;
-
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
+  gap: 8px;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0;
 }
 .nav-list li {
-  font-size: 2rem;
-  margin: 0.5rem;
+  margin: 0;
 }
 
 .nav-list a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 38px;
+  padding: 8px 14px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  color: var(--text);
+  font-size: 0.9rem;
+  font-weight: 600;
   text-decoration: none;
-  color: inherit;
+  white-space: nowrap;
+  transition: background-color 180ms ease, border-color 180ms ease,
+    color 180ms ease, transform 180ms ease;
+}
+
+.nav-list a:hover {
+  color: var(--primary-dark);
+  background: rgba(47, 118, 87, 0.1);
+  border-color: rgba(47, 118, 87, 0.2);
+  transform: translateY(-1px);
+}
+
+.nav-list a:focus-visible {
+  outline: 3px solid rgba(231, 165, 77, 0.7);
+  outline-offset: 2px;
+}
+
+.nav-list li:first-child a,
+.nav-list li:last-child a {
+  color: #ffffff;
+  background: var(--primary-dark);
+}
+
+.nav-list li:first-child a:hover,
+.nav-list li:last-child a:hover {
+  color: #ffffff;
+  background: var(--primary);
 }
 
 .incart {
@@ -28,4 +75,21 @@
   vertical-align: top;
   font-size: 12px;
   font-weight: bold;
+}
+
+@media (max-width: 600px) {
+  nav {
+    padding: 10px 12px;
+  }
+
+  .nav-list {
+    justify-content: flex-start;
+    gap: 6px;
+  }
+
+  .nav-list a {
+    min-height: 34px;
+    padding: 7px 10px;
+    font-size: 0.78rem;
+  }
 }
