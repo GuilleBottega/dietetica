@@ -1,5 +1,6 @@
 .site-footer {
   align-items: center;
+  gap: 18px;
   border-top: 1px solid var(--border);
   color: var(--text);
   display: flex;
@@ -24,6 +25,8 @@
 
 @media (max-width: 600px) {
   .site-footer {
+    flex-wrap: wrap;
+    justify-content: center;
     padding: 18px;
   }
 }

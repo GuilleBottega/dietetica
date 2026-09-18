@@ -1,7 +1,7 @@
 nav {
   width: 100%;
   padding: 14px clamp(16px, 4vw, 48px);
-  background: rgba(255, 255, 255, 0.82);
+  background: rgba(167, 235, 171, 0.82);
   border-bottom: 1px solid rgba(47, 118, 87, 0.16);
   box-shadow: 0 8px 20px rgba(33, 72, 52, 0.07);
   backdrop-filter: blur(12px);
