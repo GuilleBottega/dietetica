@@ -5,6 +5,7 @@ import './App.css'
 import { ItemDetailContainer } from './ItemDetailsContainer/ItemDetailContainer.jsx';
 import { ItemListContainer } from './ItemListContainer/ItemListContainer.jsx';
 import { Nav } from './nav/Nav.jsx';
+import Cart from './cart/Cart.jsx';
 
 
 function App() {
@@ -16,7 +17,7 @@ function App() {
         <Routes>
           <Route path="/" element={<ItemListContainer />} />
           <Route path="/category/:category" element={<ItemListContainer />} />
-          <Route path="/cart" element={<h1>Carrito</h1>} />
+          <Route path="/cart" element={<Cart />} />
           <Route path="/product/:id" element={<ItemDetailContainer />} />        
         </Routes>
       </main>
