@@ -32,7 +32,9 @@ export const CartProvider = ({ children }) => {
     return inCart;
   };
 
-  const addItem = (item) => {
+  const addItem = (item, quantity = 1) => {
+    const quantityToAdd = Math.max(1, Number(quantity) || 1);
+
     setCart((prev) => {
       const productId = String(item.id);
       const existingItem = prev.find((element) => String(element.id) === productId);
@@ -41,13 +43,13 @@ export const CartProvider = ({ children }) => {
         alert(t("addedAnother"));
         return prev.map((element) =>
           String(element.id) === productId
-            ? { ...element, quantity: (element.quantity || 1) + 1 }
+            ? { ...element, quantity: (element.quantity || 1) + quantityToAdd }
             : element
         );
       }
 
       alert(t("addedToCart"));
-      return [...prev, { ...item, quantity: 1 }];
+      return [...prev, { ...item, quantity: quantityToAdd }];
     });
   };
 
