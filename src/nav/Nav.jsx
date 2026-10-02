@@ -6,7 +6,7 @@ import "./Nav.css";
 
 export const Nav = () => {
   const { getTotalItems } = useCart();
-  const { t, translateCategory } = useLanguage();
+  const { language, t, translateCategory } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const categories = [
     "Frutos secos",
@@ -20,6 +20,12 @@ export const Nav = () => {
     "Dulces",
     "Endulzantes",
   ];
+  const sortedCategories = [...categories].sort((first, second) =>
+    new Intl.Collator(language).compare(
+      translateCategory(first),
+      translateCategory(second)
+    )
+  );
 
   useEffect(() => {
     if (!isOpen) return undefined;
@@ -61,7 +67,7 @@ export const Nav = () => {
       </div>
       {isOpen && (
         <ul className="nav-list" id="category-menu">
-          {categories.map((category) => (
+          {sortedCategories.map((category) => (
             <li key={category}>
               <Link
                 to={`/category/${encodeURIComponent(category)}`}
