@@ -58,6 +58,18 @@ body {
 	color: var(--primary);
 }
 
+.exchange-rate-status {
+	width: min(1120px, calc(100% - 40px));
+	margin: 12px auto 0;
+	padding: 10px 14px;
+	border: 1px solid rgba(47, 118, 87, 0.2);
+	border-radius: 10px;
+	color: var(--text-h);
+	background: rgba(255, 255, 255, 0.8);
+	font-size: 0.9rem;
+	text-align: center;
+}
+
 main {
 	width: min(1120px, calc(100% - 40px));
 	flex: 1;
@@ -191,4 +203,3 @@ main > section > h1::after {
 		font-size: 1rem;
 	}
 }
-

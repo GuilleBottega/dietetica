@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { ItemDetail } from "../ItemDetails/ItemDetail";
+import { useLanguage } from "../context/useLanguage.js";
 
 export const ItemDetailContainer = () => {
   const { id } = useParams();
+  const { t } = useLanguage();
   const [itemDetail, setItemDetail] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -31,13 +33,13 @@ export const ItemDetailContainer = () => {
       .finally(() => setLoading(false));
   }, [id]);
 
-  if (loading) return <p>Cargando...</p>;
-  if (error) return <p>{error}</p>;
-  if (!itemDetail) return <p>Producto no encontrado</p>;
+  if (loading) return <p>{t("loading")}</p>;
+  if (error) return <p>{t("productNotFound")}</p>;
+  if (!itemDetail) return <p>{t("productNotFound")}</p>;
 
   return (
     <section>
-      <h1>Detalles del producto</h1>
+      <h1>{t("productDetails")}</h1>
       <div className="products-container">
         <ItemDetail item={itemDetail} />
       </div>

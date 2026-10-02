@@ -1,5 +1,6 @@
 import { createContext, useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useLanguage } from "./useLanguage.js";
 
 /* -------------------------------------------------------------------------- */
 /*                              CREAMOS CONTEXTO                              */
@@ -23,6 +24,7 @@ export const useCart = () => {
 /* -------------------------------------------------------------------------- */
 export const CartProvider = ({ children }) => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [cart, setCart] = useState([]);
 
   const isInCart = (item) => {
@@ -36,7 +38,7 @@ export const CartProvider = ({ children }) => {
       const existingItem = prev.find((element) => String(element.id) === productId);
 
       if (existingItem) {
-        alert("Se agregó otra unidad del producto");
+        alert(t("addedAnother"));
         return prev.map((element) =>
           String(element.id) === productId
             ? { ...element, quantity: (element.quantity || 1) + 1 }
@@ -44,7 +46,7 @@ export const CartProvider = ({ children }) => {
         );
       }
 
-      alert("Producto agregado al carrito 🎉");
+      alert(t("addedToCart"));
       return [...prev, { ...item, quantity: 1 }];
     });
   };
@@ -52,7 +54,7 @@ export const CartProvider = ({ children }) => {
   //Eliminar del carrito
   const removeItem = (id) => {
     setCart((prev) => prev.filter((element) => String(element.id) !== String(id)));
-    alert("Producto eliminado ✅");
+    alert(t("removedFromCart"));
   };
 
   //Vacia el carrito
@@ -72,7 +74,7 @@ export const CartProvider = ({ children }) => {
 
   //Checkout
   const checkout = () => {
-    alert("Su compra ha sido realizada 🎉");
+    alert(t("purchaseComplete"));
     clearCart();
     navigate("/");
   };

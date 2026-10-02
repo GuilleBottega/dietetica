@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { ItemList } from "../ItemList/ItemList";
+import { useLanguage } from "../context/useLanguage.js";
 
 export const ItemListContainer = () => {
   const { category } = useParams();
+  const { t, translateCategory } = useLanguage();
   const [products, setProducts] = useState([]);
   const [errors, setErrors] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -12,18 +14,18 @@ export const ItemListContainer = () => {
     fetch("/data/products.json")
       .then((res) => {
         if (!res.ok) {
-          throw new Error("Error al cargar los productos");
+          throw new Error("Unable to load products");
         }
 
         return res.json();
       })
       .then((data) => setProducts(data))
-      .catch((error) => setErrors(error.message))
+      .catch(() => setErrors(true))
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <p>Cargando...</p>;
-  if (errors) return <p>{errors}</p>;
+  if (loading) return <p>{t("loading")}</p>;
+  if (errors) return <p>{t("loadProductsError")}</p>;
 
   const visibleProducts = category
     ? products.filter((product) => product.category === category)
@@ -31,7 +33,7 @@ export const ItemListContainer = () => {
 
   return (
     <section>
-      <h1>{category || "Productos"}</h1>
+      <h1>{category ? translateCategory(category) : t("products")}</h1>
       <ItemList products={visibleProducts} />
     </section>
   );

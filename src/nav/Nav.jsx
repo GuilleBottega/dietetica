@@ -1,9 +1,13 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useCart } from "../context/CartContext";
+import { useLanguage } from "../context/useLanguage.js";
 import "./Nav.css";
 
 export const Nav = () => {
   const { getTotalItems } = useCart();
+  const { t, translateCategory } = useLanguage();
+  const [isOpen, setIsOpen] = useState(false);
   const categories = [
     "Frutos secos",
     "Cereales",
@@ -17,25 +21,58 @@ export const Nav = () => {
     "Endulzantes",
   ];
 
+  useEffect(() => {
+    if (!isOpen) return undefined;
+
+    const closeOnEscape = (event) => {
+      if (event.key === "Escape") setIsOpen(false);
+    };
+
+    document.addEventListener("keydown", closeOnEscape);
+    return () => document.removeEventListener("keydown", closeOnEscape);
+  }, [isOpen]);
+
   return (
-    <nav>
-      <ul className="nav-list">
-        <li>
-          <Link to={"/"}>Home</Link>
-        </li>
-        {categories.map((category) => (
-          <li key={category}>
-            <Link to={`/category/${encodeURIComponent(category)}`}>
-              {category}
-            </Link>
-          </li>
-        ))}
-        <li>
-          <Link to={"/cart"}>
-            Carrito {getTotalItems() > 0 && <span className="incart">{getTotalItems()}</span>}
-          </Link>
-        </li>
-      </ul>
+    <nav className="site-nav" aria-label={t("mainNavigation")}>
+      <div className="site-nav__inner">
+        <Link className="nav-fixed-link" to="/">
+          {t("home")}
+        </Link>
+        <button
+          className={`menu-toggle${isOpen ? " menu-toggle--open" : ""}`}
+          type="button"
+          aria-expanded={isOpen}
+          aria-controls="category-menu"
+          onClick={() => setIsOpen((open) => !open)}
+        >
+          <span className="menu-toggle__icon" aria-hidden="true">
+            <span />
+            <span />
+            <span />
+          </span>
+          <span>{t("categories")}</span>
+        </button>
+        <Link className="nav-fixed-link nav-fixed-link--cart" to="/cart">
+          {t("cart")}
+          {getTotalItems() > 0 && (
+            <span className="incart">{getTotalItems()}</span>
+          )}
+        </Link>
+      </div>
+      {isOpen && (
+        <ul className="nav-list" id="category-menu">
+          {categories.map((category) => (
+            <li key={category}>
+              <Link
+                to={`/category/${encodeURIComponent(category)}`}
+                onClick={() => setIsOpen(false)}
+              >
+                {translateCategory(category)}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
     </nav>
   );
 };
