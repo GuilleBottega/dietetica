@@ -93,3 +93,17 @@
   outline: 3px solid rgba(231, 165, 77, 0.7);
   outline-offset: 2px;
 }
+
+@media (max-width: 600px) {
+  .cart-summary {
+    align-items: stretch;
+  }
+
+  .cart-actions {
+    width: 100%;
+  }
+
+  .cart-actions button {
+    flex: 1 1 140px;
+  }
+}

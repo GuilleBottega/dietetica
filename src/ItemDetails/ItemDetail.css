@@ -1,6 +1,7 @@
 .detail-wrapper {
   max-width: 20rem;
   margin: auto;
+  grid-column: 1 / -1;
 }
 
 .detail-wrapper .card {

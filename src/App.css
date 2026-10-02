@@ -23,7 +23,7 @@
 }
 
 body {
-	min-width: 400px;
+	min-width: 0;
 	background:
 		radial-gradient(circle at 8% 0%, rgba(231, 165, 77, 0.14), transparent 28rem),
 		linear-gradient(135deg, #dddfd3 0%, #99d091 100%);
@@ -180,8 +180,14 @@ main > section > h1::after {
 		margin-top: 28px;
 	}
 
+	.products-container > a,
+	.products-container .card {
+		min-width: 0;
+		width: 100%;
+	}
+
 	.card {
-		min-height: 300px;
+		min-height: 0;
 	}
 
 	.card img {
@@ -201,5 +207,28 @@ main > section > h1::after {
 	.card p:last-of-type {
 		padding: 12px;
 		font-size: 1rem;
+	}
+
+	.cart-page {
+		padding-right: 0;
+		padding-left: 0;
+	}
+
+	.cart-summary {
+		align-items: stretch;
+	}
+
+	.cart-actions {
+		width: 100%;
+	}
+
+	.cart-actions button {
+		flex: 1 1 140px;
+	}
+}
+
+@media (max-width: 360px) {
+	.products-container {
+		grid-template-columns: minmax(0, 1fr);
 	}
 }
