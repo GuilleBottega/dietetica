@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { ItemList } from "../ItemList/ItemList";
 import { useLanguage } from "../context/useLanguage.js";
+import { getProducts } from "../services/products";
 
 export const ItemListContainer = () => {
   const { category } = useParams();
@@ -11,13 +12,7 @@ export const ItemListContainer = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/data/products.json")
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Unable to load products");
-        }
-        return response.json();
-      })
+    getProducts()
       .then((data) => setProducts(data))
       .catch(() => setErrors(true))
       .finally(() => setLoading(false));

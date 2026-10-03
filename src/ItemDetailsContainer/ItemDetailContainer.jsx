@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { ItemDetail } from "../ItemDetails/ItemDetail";
 import { useLanguage } from "../context/useLanguage.js";
+import { getProductById } from "../services/products";
 
 export const ItemDetailContainer = () => {
   const { id } = useParams();
@@ -11,15 +12,8 @@ export const ItemDetailContainer = () => {
   useEffect(() => {
     let isCurrent = true;
 
-    fetch("/data/products.json")
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Unable to load products");
-        }
-        return response.json();
-      })
-      .then((products) => {
-        const item = products.find((product) => String(product.id) === id);
+    getProductById(id)
+      .then((item) => {
         if (isCurrent) {
           setResult({ id, item, error: item ? null : "not-found" });
         }
