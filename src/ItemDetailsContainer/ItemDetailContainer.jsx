@@ -6,42 +6,45 @@ import { useLanguage } from "../context/useLanguage.js";
 export const ItemDetailContainer = () => {
   const { id } = useParams();
   const { t } = useLanguage();
-  const [itemDetail, setItemDetail] = useState(null);
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [result, setResult] = useState({ id: null, item: null, error: null });
 
   useEffect(() => {
-    //Si volvieramos a renderizar el componente porque usamos "productos relacionados"
-    //Se tendria que volver a renderizar ItemDetailContainer con el nuevo detalle.
-    //Entonces: el array de dependencias del useEffect debe llevar el "id" y deberiamos
-    //Resetear los estados de loading y error
-    setItemDetail(null);
-    setLoading(true);
-    setError(null);
+    let isCurrent = true;
 
     fetch("/data/products.json")
-      .then((res) => res.json())
-      .then((data) => {
-        const item = data.find((product) => String(product.id) === id);
-        if (item) {
-          setItemDetail(item);
-          return;
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Unable to load products");
         }
-        throw new Error("Elemento no encontrado");
+        return response.json();
       })
-      .catch((error) => setError(error.message))
-      .finally(() => setLoading(false));
+      .then((products) => {
+        const item = products.find((product) => String(product.id) === id);
+        if (isCurrent) {
+          setResult({ id, item, error: item ? null : "not-found" });
+        }
+      })
+      .catch(() => {
+        if (isCurrent) {
+          setResult({ id, item: null, error: "load-failed" });
+        }
+      });
+
+    return () => {
+      isCurrent = false;
+    };
   }, [id]);
 
-  if (loading) return <p>{t("loading")}</p>;
-  if (error) return <p>{t("productNotFound")}</p>;
-  if (!itemDetail) return <p>{t("productNotFound")}</p>;
+  if (result.id !== id) return <p>{t("loading")}</p>;
+  if (result.error === "not-found") return <p>{t("productNotFound")}</p>;
+  if (result.error) return <p>{t("loadProductsError")}</p>;
+  if (!result.item) return <p>{t("productNotFound")}</p>;
 
   return (
     <section>
       <h1>{t("productDetails")}</h1>
       <div className="products-container">
-        <ItemDetail item={itemDetail} />
+        <ItemDetail item={result.item} />
       </div>
     </section>
   );

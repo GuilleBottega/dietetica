@@ -12,12 +12,11 @@ export const ItemListContainer = () => {
 
   useEffect(() => {
     fetch("/data/products.json")
-      .then((res) => {
-        if (!res.ok) {
+      .then((response) => {
+        if (!response.ok) {
           throw new Error("Unable to load products");
         }
-
-        return res.json();
+        return response.json();
       })
       .then((data) => setProducts(data))
       .catch(() => setErrors(true))
