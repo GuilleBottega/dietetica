@@ -5,13 +5,46 @@ import {
   getDoc,
   getDocs,
   runTransaction,
+  updateDoc,
 } from "firebase/firestore";
-import { db } from "../firebase-config";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { db, storage } from "../firebase-config";
 
 const productsCollection = "products";
 
-export const addProduct = async (product) => {
-  const document = await addDoc(collection(db, productsCollection), product);
+const uploadProductImage = async (file, path) => {
+  if (!(file instanceof Blob) || !file.type.startsWith("image/")) {
+    throw new Error("Product image must be a valid image file");
+  }
+
+  const imageRef = ref(storage, path);
+  await uploadBytes(imageRef, file);
+  return getDownloadURL(imageRef);
+};
+
+const uploadLocalProductImage = async (imagePath, productId) => {
+  const response = await fetch(imagePath);
+  if (!response.ok) {
+    throw new Error(`Unable to load product image: ${imagePath}`);
+  }
+
+  const imageFile = await response.blob();
+  const fileName = imagePath.split("/").pop();
+  return uploadProductImage(imageFile, `products/${productId}/${fileName}`);
+};
+
+export const addProduct = async (product, imageFile) => {
+  const productToSave = imageFile
+    ? {
+        ...product,
+        image: await uploadProductImage(
+          imageFile,
+          `products/${crypto.randomUUID()}-${imageFile.name}`
+        ),
+      }
+    : product;
+
+  const document = await addDoc(collection(db, productsCollection), productToSave);
   return document.id;
 };
 
@@ -27,21 +60,45 @@ export const seedProductsFromJson = async () => {
   }
 
   const results = await Promise.all(
-    products.map((product) => {
+    products.map(async (product) => {
       const productRef = doc(db, productsCollection, String(product.id));
-      return runTransaction(db, async (transaction) => {
-        const existingProduct = await transaction.get(productRef);
-        if (existingProduct.exists()) return false;
+      const existingProduct = await getDoc(productRef);
+      const existingData = existingProduct.exists()
+        ? existingProduct.data()
+        : null;
 
-        transaction.set(productRef, product);
-        return true;
+      if (existingData && !existingData.image?.startsWith("/")) {
+        return "skipped";
+      }
+
+      let productToSave = product;
+      const localImagePath = existingData?.image ?? product.image;
+      if (typeof localImagePath === "string" && localImagePath.startsWith("/")) {
+        productToSave = {
+          ...(existingData ?? product),
+          image: await uploadLocalProductImage(localImagePath, product.id),
+        };
+      }
+
+      if (existingData) {
+        await updateDoc(productRef, { image: productToSave.image });
+        return "updated";
+      }
+
+      return runTransaction(db, async (transaction) => {
+        const currentProduct = await transaction.get(productRef);
+        if (currentProduct.exists()) return "skipped";
+
+        transaction.set(productRef, productToSave);
+        return "added";
       });
     })
   );
 
   return {
-    added: results.filter(Boolean).length,
-    skipped: results.filter((wasAdded) => !wasAdded).length,
+    added: results.filter((result) => result === "added").length,
+    updated: results.filter((result) => result === "updated").length,
+    skipped: results.filter((result) => result === "skipped").length,
   };
 };
 
