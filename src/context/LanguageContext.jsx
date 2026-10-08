@@ -161,6 +161,33 @@ const productTranslations = {
   },
 };
 
+const normalizeProductName = (name) =>
+  name
+    ?.normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim()
+    .toLocaleLowerCase("es");
+
+const productTranslationsByName = {
+  almendras: productTranslations[1],
+  avena: productTranslations[2],
+  barrita: productTranslations[3],
+  chia: productTranslations[4],
+  coco: productTranslations[5],
+  "copos de maiz": productTranslations[6],
+  "crema de mani": productTranslations[7],
+  datiles: productTranslations[8],
+  galletitas: productTranslations[9],
+  "harina integral": productTranslations[10],
+  legumbres: productTranslations[11],
+  membrillo: productTranslations[12],
+  mermelada: productTranslations[13],
+  nuez: productTranslations[14],
+  "pasas de uva": productTranslations[15],
+  pistachos: productTranslations[16],
+  stevia: productTranslations[17],
+};
+
 export const LanguageProvider = ({ children }) => {
   const [language, setLanguage] = useState(
     () => (window.localStorage.getItem("language") === "en" ? "en" : "es")
@@ -207,10 +234,14 @@ export const LanguageProvider = ({ children }) => {
   const t = (key) => translations[language][key];
   const translateCategory = (category) =>
     translations[language].categoriesNames[category] || category;
-  const translateProduct = (product) =>
-    language === "en"
-      ? { ...product, ...productTranslations[product.id] }
-      : product;
+  const translateProduct = (product) => {
+    if (language !== "en") return product;
+
+    const translation =
+      productTranslations[product.id] ??
+      productTranslationsByName[normalizeProductName(product.name)];
+    return translation ? { ...product, ...translation } : product;
+  };
   const formatPrice = (amount) => {
     if (language === "en" && !exchangeRate) return null;
 
