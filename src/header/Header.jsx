@@ -3,7 +3,7 @@ import { useLanguage } from '../context/useLanguage.js'
 import { Link } from 'react-router-dom'
 
 function Header() {
-	const { language, setLanguage, t } = useLanguage()
+	const { language, setLanguage, theme, setTheme, t } = useLanguage()
 
 	return (
 		<header className="site-header">
@@ -11,6 +11,15 @@ function Header() {
 				Dietética Punto Diet
 			</Link>
 			<div className="site-header__tools">
+				<button
+					className="theme-toggle"
+					type="button"
+					aria-label={t(theme === 'dark' ? 'switchToLightMode' : 'switchToDarkMode')}
+					onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+				>
+					<span aria-hidden="true">{theme === 'dark' ? '☀️' : '🌙'}</span>
+					<span>{t(theme === 'dark' ? 'switchToLightMode' : 'switchToDarkMode')}</span>
+				</button>
 				<label className="language-picker">
 					<span>{t('language')}</span>
 					<select

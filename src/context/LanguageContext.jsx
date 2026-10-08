@@ -9,6 +9,8 @@ const translations = {
     language: "Idioma",
     spanish: "Español",
     english: "Inglés",
+    switchToDarkMode: "Activar modo oscuro",
+    switchToLightMode: "Activar modo claro",
     mainNavigation: "Navegación principal",
     products: "Productos",
     loading: "Cargando...",
@@ -52,6 +54,8 @@ const translations = {
     language: "Language",
     spanish: "Spanish",
     english: "English",
+    switchToDarkMode: "Enable dark mode",
+    switchToLightMode: "Enable light mode",
     mainNavigation: "Main navigation",
     products: "Products",
     loading: "Loading...",
@@ -192,6 +196,9 @@ export const LanguageProvider = ({ children }) => {
   const [language, setLanguage] = useState(
     () => (window.localStorage.getItem("language") === "en" ? "en" : "es")
   );
+  const [theme, setTheme] = useState(
+    () => (window.localStorage.getItem("theme") === "dark" ? "dark" : "light")
+  );
   const [exchangeRate, setExchangeRate] = useState(null);
   const [exchangeRateError, setExchangeRateError] = useState(false);
 
@@ -199,6 +206,12 @@ export const LanguageProvider = ({ children }) => {
     window.localStorage.setItem("language", language);
     document.documentElement.lang = language;
   }, [language]);
+
+  useEffect(() => {
+    window.localStorage.setItem("theme", theme);
+    document.documentElement.dataset.theme = theme;
+    document.documentElement.style.colorScheme = theme;
+  }, [theme]);
 
   useEffect(() => {
     if (language !== "en" || exchangeRate !== null || exchangeRateError) {
@@ -259,6 +272,8 @@ export const LanguageProvider = ({ children }) => {
       value={{
         language,
         setLanguage,
+        theme,
+        setTheme,
         t,
         translateCategory,
         translateProduct,

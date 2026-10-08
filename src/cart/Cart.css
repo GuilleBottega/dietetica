@@ -46,6 +46,10 @@
   color: #1f3f2d;
 }
 
+:root[data-theme="dark"] .cart-summary p {
+  color: var(--text-h);
+}
+
 .cart-actions {
   display: flex;
   flex-wrap: wrap;
@@ -67,6 +71,11 @@
   background: #eef7f0;
   color: #2b5d43;
   box-shadow: 0 6px 16px rgba(47, 118, 87, 0.08);
+}
+
+:root[data-theme="dark"] .cart-btn {
+  background: #304437;
+  color: var(--text-h);
 }
 
 .cart-btn-danger {

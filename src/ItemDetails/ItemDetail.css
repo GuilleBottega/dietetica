@@ -43,6 +43,13 @@
   cursor: pointer;
 }
 
+:root[data-theme="dark"] .quantity-btn,
+:root[data-theme="dark"] .quantity-selector input {
+  background: #26372c;
+  border-color: var(--border);
+  color: var(--text-h);
+}
+
 .quantity-selector input {
   width: 4.5rem;
   min-height: 2.5rem;
