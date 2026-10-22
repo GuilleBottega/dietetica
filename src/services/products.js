@@ -1,17 +1,17 @@
 import {
   addDoc,
   collection,
+  deleteDoc,
   doc,
   getDoc,
   getDocs,
   query,
+  updateDoc,
   where,
 } from "firebase/firestore";
 import { db } from "../firebase-config.js";
 
-//Todas las funciones van a utilizar esta coleccion.
-//La hacemos global y que todas la usen en vez defirla varias veces
-// Creamos la referencia a la coleccion: en mi caso se llama "products"
+
 const productsRef = collection(db, "products");
 
 /* -------------------------------------------------------------------------- */
@@ -19,9 +19,7 @@ const productsRef = collection(db, "products");
 /* -------------------------------------------------------------------------- */
 export const getProducts = async () => {
   try {
-    //Esto no nos da el objeto de producto directo,
-    // sino un tipo especial de firestore. Seria como una "foto" de lo que hay
-    //al momento, mas otras cosas. Es un "QuerySnapshot"
+ 
     const snapshot = await getDocs(productsRef);
 
     const productsFormat = snapshot.docs.map((doc) => {
@@ -38,16 +36,16 @@ export const getProducts = async () => {
 /* -------------------------------------------------------------------------- */
 /*                            TRAER PRODUCTO POR ID                           */
 /* -------------------------------------------------------------------------- */
-// Funcion que SOLO pide un dato
+
 export const getProductById = async (id) => {
   try {
-    // Creamos la referencia al documento
+
     const productRef = doc(productsRef, id);
 
-    // Traemos el documento:
+  
     const snapshot = await getDoc(productRef);
 
-    // Verificamos si existe
+    
     if (snapshot.exists()) {
       const product = { id: snapshot.id, ...snapshot.data() };
       console.log("Doc:", product);
@@ -68,16 +66,16 @@ export const getByCategory = async (category) => {
   try {
     let queryRef;
 
-    //truthy
+
     if (category) {
       queryRef = query(productsRef, where("category", "==", category));
     } else {
       queryRef = productsRef;
     }
 
-    // Traer los documentos:
+   
     const snapshot = await getDocs(queryRef);
-    //Mapeo de datos para formateo
+    
     const productsFormat = snapshot.docs.map((doc) => {
       return { id: doc.id, ...doc.data() };
     });
@@ -93,12 +91,30 @@ export const getByCategory = async (category) => {
 /* -------------------------------------------------------------------------- */
 export const createProduct = async (productData) => {
   try {
-    //Tan facil como usar la funcion addDoc y pasarle la coleccion y el doc a agregar
+    
     const docRef = await addDoc(productsRef, productData);
 
-    return docRef.id; // opcional, por si quieren usar el id para algo
+    return docRef.id;
   } catch (error) {
     console.error("Error al crear producto:", error);
+    throw error;
+  }
+};
+
+export const updateProduct = async (id, productData) => {
+  try {
+    await updateDoc(doc(productsRef, id), productData);
+  } catch (error) {
+    console.error("Error al actualizar producto:", error);
+    throw error;
+  }
+};
+
+export const deleteProduct = async (id) => {
+  try {
+    await deleteDoc(doc(productsRef, id));
+  } catch (error) {
+    console.error("Error al eliminar producto:", error);
     throw error;
   }
 };

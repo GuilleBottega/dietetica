@@ -2,25 +2,59 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
 import { useLanguage } from "../../context/useLanguage.js";
+import { getProducts } from "../../services/products.js";
 import "./Nav.css";
+
+const defaultCategories = [
+  "Aceites",
+  "Frutos secos",
+  "Cereales",
+  "Colaciones",
+  "Semillas",
+  "Frutas deshidratadas",
+  "Untables",
+  "Harinas",
+  "Legumbres",
+  "Dulces",
+  "Endulzantes",
+];
 
 export const Nav = () => {
   const { getTotalItems } = useCart();
   const { language, t, translateCategory } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
-  const categories = [
-    "Aceites",
-    "Frutos secos",
-    "Cereales",
-    "Colaciones",
-    "Semillas",
-    "Frutas deshidratadas",
-    "Untables",
-    "Harinas",
-    "Legumbres",
-    "Dulces",
-    "Endulzantes",
-  ];
+  const [categories, setCategories] = useState(defaultCategories);
+  const [categoriesError, setCategoriesError] = useState("");
+
+  useEffect(() => {
+    let isCurrent = true;
+
+    getProducts()
+      .then((products) => {
+        const availableCategories = [
+          ...new Set([
+            ...defaultCategories,
+            ...products
+              .map((product) => product.category?.trim())
+              .filter(Boolean),
+          ]),
+        ];
+        if (isCurrent) setCategories(availableCategories);
+      })
+      .catch((error) => {
+        console.error("No se pudieron cargar las categorías del menú:", error);
+        if (isCurrent) {
+          setCategoriesError(
+            "No se pudieron actualizar las categorías. Se muestran las categorías habituales."
+          );
+        }
+      });
+
+    return () => {
+      isCurrent = false;
+    };
+  }, []);
+
   const sortedCategories = [...categories].sort((first, second) =>
     new Intl.Collator(language).compare(
       translateCategory(first),
@@ -68,6 +102,11 @@ export const Nav = () => {
       </div>
       {isOpen && (
         <ul className="nav-list" id="category-menu">
+          {categoriesError && (
+            <li className="nav-list__message" role="status">
+              {categoriesError}
+            </li>
+          )}
           {sortedCategories.map((category) => (
             <li key={category}>
               <Link

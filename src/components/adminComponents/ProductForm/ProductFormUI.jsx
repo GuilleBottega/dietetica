@@ -3,8 +3,12 @@ export const ProductFormUI = ({
   errors,
   loading,
   categories,
+  categoryIsCustom,
+  customCategoryOption,
   categoriesLoading,
   categoriesError,
+  isEditing = false,
+  existingImage = "",
   onChange,
   onFileChange,
   onSubmit,
@@ -12,7 +16,7 @@ export const ProductFormUI = ({
   return (
     <section>
       <form className="product-form" onSubmit={onSubmit}>
-        <h2>Agregar nuevo producto</h2>
+        <h2>{isEditing ? "Editar producto" : "Agregar nuevo producto"}</h2>
 
         <div>
           <label>Nombre:</label>
@@ -41,7 +45,7 @@ export const ProductFormUI = ({
           <select
             id="product-category"
             name="category"
-            value={product.category}
+            value={categoryIsCustom ? customCategoryOption : product.category}
             onChange={onChange}
             disabled={categoriesLoading || categories.length === 0}
             aria-invalid={Boolean(errors.category)}
@@ -61,7 +65,23 @@ export const ProductFormUI = ({
                 {category}
               </option>
             ))}
+            <option value={customCategoryOption}>Otra categoría...</option>
           </select>
+          {categoryIsCustom && (
+            <input
+              type="text"
+              name="customCategory"
+              value={product.category}
+              onChange={onChange}
+              placeholder="Escribí la nueva categoría"
+              aria-label="Nueva categoría"
+              aria-invalid={Boolean(errors.category)}
+              aria-describedby={
+                errors.category ? "product-category-error" : undefined
+              }
+              autoFocus
+            />
+          )}
           {errors.category && <p className="error">{errors.category}</p>}
           {categoriesError && <p className="error" role="alert">{categoriesError}</p>}
         </div>
@@ -77,8 +97,22 @@ export const ProductFormUI = ({
         </div>
 
         <div>
-          <label>Imagen:</label>
-          <input type="file" accept="image/*" onChange={onFileChange} />
+          <label htmlFor="product-image">
+            Imagen{isEditing ? " (opcional para conservar la actual)" : ""}:
+          </label>
+          <input
+            id="product-image"
+            type="file"
+            accept="image/*"
+            onChange={onFileChange}
+          />
+          {isEditing && existingImage && (
+            <img
+              className="product-form__image-preview"
+              src={existingImage}
+              alt={`Imagen actual de ${product.name}`}
+            />
+          )}
           {errors.file && <p className="error">{errors.file}</p>}
         </div>
 
@@ -91,7 +125,9 @@ export const ProductFormUI = ({
             ? "Guardando..."
             : categoriesLoading
               ? "Cargando categorías..."
-              : "Guardar"}
+              : isEditing
+                ? "Guardar cambios"
+                : "Guardar"}
         </button>
 
         {errors.general && <p className="error">{errors.general}</p>}

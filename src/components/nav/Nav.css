@@ -146,6 +146,12 @@
   margin: 0;
 }
 
+.nav-list__message {
+  padding: 6px 10px;
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+}
+
 .nav-list a {
   display: flex;
   align-items: center;

@@ -9,6 +9,9 @@ import Cart from './components/cart/Cart.jsx';
 import { useLanguage } from './context/useLanguage.js';
 import ProductFormContainer from './components/adminComponents/ProductForm/ProductFormContainer.jsx';
 import ProductSuccess from './components/adminComponents/ProductSuccess.jsx';
+import AdminLogin from './components/adminComponents/AdminLogin.jsx';
+import AdminRoute from './components/adminComponents/AdminRoute.jsx';
+import AdminProducts from './components/adminComponents/AdminProducts.jsx';
 
 function App() {
   const { language, t, exchangeRate, exchangeRateError } = useLanguage();
@@ -28,10 +31,19 @@ function App() {
           <Route path="/category/:category" element={<ItemListContainer />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/product/:id" element={<ItemDetailContainer />} />    
-          <Route path="/admin" element={<ProductFormContainer />} />
-          <Route
-            path="/admin/products/success/:id"
-            element={<ProductSuccess />}/>
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route element={<AdminRoute />}>
+            <Route path="/admin" element={<ProductFormContainer />} />
+            <Route path="/admin/products" element={<AdminProducts />} />
+            <Route
+              path="/admin/products/:id/edit"
+              element={<ProductFormContainer />}
+            />
+            <Route
+              path="/admin/products/success/:id"
+              element={<ProductSuccess />}
+            />
+          </Route>
         </Routes>
       </main>
       <Footer />

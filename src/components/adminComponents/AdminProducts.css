@@ -1,0 +1,132 @@
+.admin-products {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.admin-products__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.admin-products__header h1 {
+  margin: 0;
+  color: var(--text-h);
+}
+
+.admin-products__add,
+.admin-products__edit,
+.admin-products__delete {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 16px;
+  color: #fff;
+  background: linear-gradient(135deg, #765a83, #594066);
+  border-radius: 9px;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.admin-products__delete {
+  border: 0;
+  background: #a13f49;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.9rem;
+}
+
+.admin-products__delete:hover:not(:disabled) {
+  background: #842f39;
+}
+
+.admin-products__delete:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.admin-products__edit:focus-visible,
+.admin-products__delete:focus-visible,
+.admin-products__add:focus-visible {
+  outline: 3px solid #e7a54d;
+  outline-offset: 3px;
+}
+
+.admin-products__list {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.admin-products__item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+}
+
+.admin-products__item img {
+  width: 64px;
+  height: 64px;
+  flex: 0 0 64px;
+  object-fit: cover;
+  border-radius: 9px;
+  background: var(--border);
+}
+
+.admin-products__details {
+  min-width: 0;
+  flex: 1;
+}
+
+.admin-products__details h2 {
+  margin: 0 0 4px;
+  overflow-wrap: anywhere;
+  color: var(--text-h);
+  font-size: 1rem;
+}
+
+.admin-products__details p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.admin-products__error {
+  color: #a13f49;
+}
+
+@media (max-width: 520px) {
+  .admin-products__header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .admin-products__item {
+    gap: 10px;
+    padding: 10px;
+  }
+
+  .admin-products__item img {
+    width: 48px;
+    height: 48px;
+    flex-basis: 48px;
+  }
+
+  .admin-products__edit {
+    padding: 8px 10px;
+  }
+
+  .admin-products__delete {
+    padding: 8px 10px;
+  }
+}

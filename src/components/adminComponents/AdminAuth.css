@@ -1,0 +1,137 @@
+.admin-login-page {
+  display: grid;
+  justify-items: center;
+  padding: 24px 0;
+}
+
+.admin-login-form {
+  display: grid;
+  gap: 12px;
+  width: min(100%, 460px);
+  padding: clamp(24px, 5vw, 40px);
+  color: #211c25;
+  background: linear-gradient(150deg, #fff, #faf7fc);
+  border: 1px solid rgba(94, 67, 113, 0.16);
+  border-radius: 18px;
+  box-shadow: 0 20px 50px rgba(48, 39, 56, 0.12);
+}
+
+.admin-login-form__eyebrow {
+  margin: 0;
+  color: #765a83;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.admin-login-form h1 {
+  margin: 0;
+  color: #211c25;
+  font-family: var(--heading);
+  font-size: clamp(1.8rem, 5vw, 2.3rem);
+  line-height: 1.15;
+}
+
+.admin-login-form__description {
+  margin: 0 0 8px;
+  color: #625b68;
+}
+
+.admin-login-form label {
+  margin-top: 4px;
+  color: #302738;
+  font-weight: 600;
+}
+
+.admin-login-form input {
+  width: 100%;
+  min-height: 46px;
+  padding: 11px 13px;
+  color: #211c25;
+  background: #fbf9fc;
+  border: 1px solid #e3dbe8;
+  border-radius: 10px;
+  font: inherit;
+}
+
+.admin-login-form input:focus-visible {
+  outline: 3px solid rgba(128, 97, 142, 0.2);
+  border-color: #80618e;
+}
+
+.admin-login-form__error {
+  margin: 0;
+  color: #a13f49;
+  font-size: 0.9rem;
+}
+
+.admin-login-form button,
+.admin-session button {
+  padding: 11px 18px;
+  color: #fff;
+  background: linear-gradient(135deg, #765a83, #594066);
+  border: 0;
+  border-radius: 10px;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+}
+
+.admin-login-form button {
+  margin-top: 10px;
+}
+
+.admin-login-form button:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.admin-session {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  color: var(--text);
+  font-size: 0.9rem;
+}
+
+.admin-session button {
+  padding: 8px 12px;
+  font-size: 0.82rem;
+}
+
+.admin-auth-status {
+  color: var(--text-h);
+  text-align: center;
+}
+
+:root[data-theme="dark"] .admin-login-form {
+  color: #f1f6f2;
+  background: linear-gradient(150deg, #202c24, #252a27);
+  border-color: rgba(177, 150, 195, 0.2);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.24);
+}
+
+:root[data-theme="dark"] .admin-login-form h1,
+:root[data-theme="dark"] .admin-login-form label {
+  color: #f1f6f2;
+}
+
+:root[data-theme="dark"] .admin-login-form__description {
+  color: #b1c0b5;
+}
+
+:root[data-theme="dark"] .admin-login-form input {
+  color: #f1f6f2;
+  background: #121a15;
+  border-color: #465148;
+}
+
+@media (max-width: 600px) {
+  .admin-session {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

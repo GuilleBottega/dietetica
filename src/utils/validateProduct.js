@@ -1,4 +1,4 @@
-export const validateProduct = (product) => {
+export const validateProduct = (product, { requireImage = true } = {}) => {
   const errors = {};
 
   if (!product.name.trim()) {
@@ -17,7 +17,7 @@ export const validateProduct = (product) => {
     errors.category = "La categoria es obligatoria";
   }
 
-  if (!product.file) {
+  if (requireImage && !product.file) {
     errors.file = "Debes seleccionar una imagen";
   }
   return errors;
