@@ -35,6 +35,7 @@ const translations = {
     purchaseComplete: "Su compra ha sido realizada 🎉",
     whatsappMessage: "Hola, quiero hacer una consulta",
     categoriesNames: {
+      Aceites: "Aceites",
       "Frutos secos": "Frutos secos",
       Cereales: "Cereales",
       Colaciones: "Colaciones",
@@ -80,6 +81,7 @@ const translations = {
     purchaseComplete: "Your purchase is complete 🎉",
     whatsappMessage: "Hello, I have a question",
     categoriesNames: {
+      Aceites: "Oils",
       "Frutos secos": "Nuts",
       Cereales: "Cereals",
       Colaciones: "Snacks",

@@ -9,6 +9,7 @@ export const Nav = () => {
   const { language, t, translateCategory } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const categories = [
+    "Aceites",
     "Frutos secos",
     "Cereales",
     "Colaciones",
