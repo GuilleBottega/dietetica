@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { ItemDetail } from "../ItemDetails/ItemDetail";
-import { useLanguage } from "../context/useLanguage.js";
-import { getProductById } from "../services/products";
+import { useLanguage } from "../../context/useLanguage.js";
+import { getProductById } from "../../services/products";
 
 export const ItemDetailContainer = () => {
   const { id } = useParams();

@@ -68,6 +68,18 @@
 	padding: 8px 28px 8px 10px;
 }
 
+:root[data-theme="dark"] .language-picker select {
+	color: #f1f6f2;
+	background-color: #26382d;
+	border-color: rgba(255, 255, 255, 0.35);
+	color-scheme: dark;
+}
+
+:root[data-theme="dark"] .language-picker option {
+	color: #f1f6f2;
+	background-color: #26382d;
+}
+
 .language-picker select:focus-visible {
 	outline: 3px solid var(--accent);
 	outline-offset: 2px;

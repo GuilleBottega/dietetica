@@ -1,6 +1,6 @@
 import { Item } from "../Item/Item";
 import { Link } from "react-router-dom";
-import { useLanguage } from "../context/useLanguage.js";
+import { useLanguage } from "../../context/useLanguage.js";
 import "./ItemList.css";
 
 export const ItemList = ({ products }) => {

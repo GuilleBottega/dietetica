@@ -1,5 +1,5 @@
 import "./Item.css";
-import { useLanguage } from "../context/useLanguage.js";
+import { useLanguage } from "../../context/useLanguage.js";
 
 export const Item = ({ id, name, price, description, image, children }) => {
   const { translateProduct, formatPrice } = useLanguage();

@@ -1,5 +1,5 @@
-import { useCart } from "../context/CartContext";
-import { useLanguage } from "../context/useLanguage.js";
+import { useCart } from "../../context/CartContext";
+import { useLanguage } from "../../context/useLanguage.js";
 import "./Cart.css";
 
 const Cart = () => {

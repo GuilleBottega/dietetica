@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { useCart } from "../context/CartContext";
-import { useLanguage } from "../context/useLanguage.js";
+import { useCart } from "../../context/CartContext";
+import { useLanguage } from "../../context/useLanguage.js";
 import "./Nav.css";
 
 export const Nav = () => {

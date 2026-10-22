@@ -1,5 +1,5 @@
 import './Footer.css'
-import { useLanguage } from '../context/useLanguage.js'
+import { useLanguage } from '../../context/useLanguage.js'
 
 function Footer() {
   const { t } = useLanguage()

@@ -1,0 +1,26 @@
+.product-success {
+  display: grid;
+  justify-items: start;
+  gap: 14px;
+  max-width: 680px;
+  margin: 0 auto;
+  padding: clamp(24px, 5vw, 40px);
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+}
+
+.product-success h1,
+.product-success p {
+  margin: 0;
+}
+
+.product-success a {
+  color: var(--primary-dark);
+  font-weight: 700;
+}
+
+.product-success__id {
+  color: var(--text-secondary);
+}

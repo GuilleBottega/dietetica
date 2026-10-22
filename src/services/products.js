@@ -4,130 +4,101 @@ import {
   doc,
   getDoc,
   getDocs,
-  runTransaction,
-  updateDoc,
+  query,
+  where,
 } from "firebase/firestore";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { db, storage } from "../firebase-config";
+import { db } from "../firebase-config.js";
 
-const productsCollection = "products";
+//Todas las funciones van a utilizar esta coleccion.
+//La hacemos global y que todas la usen en vez defirla varias veces
+// Creamos la referencia a la coleccion: en mi caso se llama "products"
+const productsRef = collection(db, "products");
 
-const uploadProductImage = async (file, path) => {
-  if (!(file instanceof Blob) || !file.type.startsWith("image/")) {
-    throw new Error("Product image must be a valid image file");
-  }
-
-  const imageRef = ref(storage, path);
-  await uploadBytes(imageRef, file);
-  return getDownloadURL(imageRef);
-};
-
-const uploadLocalProductImage = async (imagePath, productId) => {
-  const response = await fetch(imagePath);
-  if (!response.ok) {
-    throw new Error(`Unable to load product image: ${imagePath}`);
-  }
-
-  const imageFile = await response.blob();
-  const fileName = imagePath.split("/").pop();
-  return uploadProductImage(imageFile, `products/${productId}/${fileName}`);
-};
-
-export const addProduct = async (product, imageFile) => {
-  const productToSave = imageFile
-    ? {
-        ...product,
-        image: await uploadProductImage(
-          imageFile,
-          `products/${crypto.randomUUID()}-${imageFile.name}`
-        ),
-      }
-    : product;
-
-  const document = await addDoc(collection(db, productsCollection), productToSave);
-  return document.id;
-};
-
-export const seedProductsFromJson = async () => {
-  const response = await fetch("/data/products.json");
-  if (!response.ok) {
-    throw new Error("Unable to load local products");
-  }
-
-  const products = await response.json();
-  if (!Array.isArray(products)) {
-    throw new Error("Local products data must be an array");
-  }
-
-  const results = await Promise.all(
-    products.map(async (product) => {
-      const productRef = doc(db, productsCollection, String(product.id));
-      const existingProduct = await getDoc(productRef);
-      const existingData = existingProduct.exists()
-        ? existingProduct.data()
-        : null;
-
-      if (existingData && !existingData.image?.startsWith("/")) {
-        return "skipped";
-      }
-
-      let productToSave = product;
-      const localImagePath = existingData?.image ?? product.image;
-      if (typeof localImagePath === "string" && localImagePath.startsWith("/")) {
-        productToSave = {
-          ...(existingData ?? product),
-          image: await uploadLocalProductImage(localImagePath, product.id),
-        };
-      }
-
-      if (existingData) {
-        await updateDoc(productRef, { image: productToSave.image });
-        return "updated";
-      }
-
-      return runTransaction(db, async (transaction) => {
-        const currentProduct = await transaction.get(productRef);
-        if (currentProduct.exists()) return "skipped";
-
-        transaction.set(productRef, productToSave);
-        return "added";
-      });
-    })
-  );
-
-  return {
-    added: results.filter((result) => result === "added").length,
-    updated: results.filter((result) => result === "updated").length,
-    skipped: results.filter((result) => result === "skipped").length,
-  };
-};
-
-const mapProduct = (documentSnapshot) => {
-  const product = documentSnapshot.data();
-  return { ...product, id: product.id ?? documentSnapshot.id };
-};
-
+/* -------------------------------------------------------------------------- */
+/*                               TRAER PRODUCTOS                              */
+/* -------------------------------------------------------------------------- */
 export const getProducts = async () => {
-  const snapshot = await getDocs(collection(db, productsCollection));
+  try {
+    //Esto no nos da el objeto de producto directo,
+    // sino un tipo especial de firestore. Seria como una "foto" de lo que hay
+    //al momento, mas otras cosas. Es un "QuerySnapshot"
+    const snapshot = await getDocs(productsRef);
 
-  if (snapshot.empty) {
-    const response = await fetch("/data/products.json");
-    if (!response.ok) {
-      throw new Error("Unable to load local products");
-    }
-    return response.json();
+    const productsFormat = snapshot.docs.map((doc) => {
+      return { id: doc.id, ...doc.data() };
+    });
+
+    return productsFormat;
+  } catch (error) {
+    console.log("Error al traer productos", error);
+    throw error;
   }
-
-  return snapshot.docs.map(mapProduct);
 };
 
+/* -------------------------------------------------------------------------- */
+/*                            TRAER PRODUCTO POR ID                           */
+/* -------------------------------------------------------------------------- */
+// Funcion que SOLO pide un dato
 export const getProductById = async (id) => {
-  const productDocument = await getDoc(doc(db, productsCollection, id));
+  try {
+    // Creamos la referencia al documento
+    const productRef = doc(productsRef, id);
 
-  if (productDocument.exists()) {
-    return mapProduct(productDocument);
+    // Traemos el documento:
+    const snapshot = await getDoc(productRef);
+
+    // Verificamos si existe
+    if (snapshot.exists()) {
+      const product = { id: snapshot.id, ...snapshot.data() };
+      console.log("Doc:", product);
+      return product;
+    } else {
+      return null;
+    }
+  } catch (error) {
+    console.error("Error al traer producto por ID:", error);
+    throw error;
   }
+};
 
-  const products = await getProducts();
-  return products.find((product) => String(product.id) === id) ?? null;
+/* -------------------------------------------------------------------------- */
+/*                          SI FILTRAMOS POR CATEGORY                         */
+/* -------------------------------------------------------------------------- */
+export const getByCategory = async (category) => {
+  try {
+    let queryRef;
+
+    //truthy
+    if (category) {
+      queryRef = query(productsRef, where("category", "==", category));
+    } else {
+      queryRef = productsRef;
+    }
+
+    // Traer los documentos:
+    const snapshot = await getDocs(queryRef);
+    //Mapeo de datos para formateo
+    const productsFormat = snapshot.docs.map((doc) => {
+      return { id: doc.id, ...doc.data() };
+    });
+    return productsFormat;
+  } catch (error) {
+    console.error("Error al filtrar productos:", error);
+    throw error;
+  }
+};
+
+/* -------------------------------------------------------------------------- */
+/*                              ALTA DE PRODUCTO                              */
+/* -------------------------------------------------------------------------- */
+export const createProduct = async (productData) => {
+  try {
+    //Tan facil como usar la funcion addDoc y pasarle la coleccion y el doc a agregar
+    const docRef = await addDoc(productsRef, productData);
+
+    return docRef.id; // opcional, por si quieren usar el id para algo
+  } catch (error) {
+    console.error("Error al crear producto:", error);
+    throw error;
+  }
 };
