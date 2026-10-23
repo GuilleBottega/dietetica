@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { signOut } from "firebase/auth";
-import { Navigate, Outlet, useLocation } from "react-router-dom";
+import { Navigate, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { auth } from "../../firebase-config.js";
 import { useAuth } from "../../context/useAuth.js";
 import "./AdminAuth.css";
@@ -8,6 +8,7 @@ import "./AdminAuth.css";
 export default function AdminRoute() {
   const { user, loading } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
   const [logoutError, setLogoutError] = useState("");
 
   if (loading) {
@@ -32,6 +33,7 @@ export default function AdminRoute() {
     setLogoutError("");
     try {
       await signOut(auth);
+      navigate("/");
     } catch (error) {
       console.error("No se pudo cerrar la sesión:", error);
       setLogoutError("No se pudo cerrar la sesión. Intentá nuevamente.");
