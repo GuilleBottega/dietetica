@@ -97,6 +97,10 @@
   font-size: 0.9rem;
 }
 
+.admin-session__welcome {
+  margin: 0;
+}
+
 .admin-session button {
   padding: 8px 12px;
   font-size: 0.82rem;

@@ -41,7 +41,9 @@ export default function AdminRoute() {
   return (
     <div className="admin-area">
       <div className="admin-session">
-        <span>{user.email}</span>
+        <p className="admin-session__welcome">
+          ¡Hola de nuevo, {user.email}!
+        </p>
         <button type="button" onClick={handleLogout}>
           Cerrar sesión
         </button>
