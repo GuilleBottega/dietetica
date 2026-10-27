@@ -1,15 +1,15 @@
 import {
-  addDoc,
   collection,
   deleteDoc,
   doc,
   getDoc,
   getDocs,
   query,
-  updateDoc,
   where,
+  writeBatch,
 } from "firebase/firestore";
 import { db } from "../firebase-config.js";
+import { setCategory } from "./categories.js";
 
 
 const productsRef = collection(db, "products");
@@ -91,9 +91,12 @@ export const getByCategory = async (category) => {
 /* -------------------------------------------------------------------------- */
 export const createProduct = async (productData) => {
   try {
-    
-    const docRef = await addDoc(productsRef, productData);
-
+    const batch = writeBatch(db);
+    const productRef = doc(productsRef);
+    await setCategory(productData.category, batch);
+    batch.set(productRef, productData);
+    await batch.commit();
+    const docRef = productRef;
     return docRef.id;
   } catch (error) {
     console.error("Error al crear producto:", error);
@@ -103,7 +106,10 @@ export const createProduct = async (productData) => {
 
 export const updateProduct = async (id, productData) => {
   try {
-    await updateDoc(doc(productsRef, id), productData);
+    const batch = writeBatch(db);
+    batch.update(doc(productsRef, id), productData);
+    await setCategory(productData.category, batch);
+    await batch.commit();
   } catch (error) {
     console.error("Error al actualizar producto:", error);
     throw error;

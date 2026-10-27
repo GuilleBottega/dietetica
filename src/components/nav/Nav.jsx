@@ -2,48 +2,31 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
 import { useLanguage } from "../../context/useLanguage.js";
-import { getProducts } from "../../services/products.js";
+import { defaultCategories, getCategories } from "../../services/categories.js";
 import "./Nav.css";
-
-const defaultCategories = [
-  "Aceites",
-  "Frutos secos",
-  "Cereales",
-  "Colaciones",
-  "Semillas",
-  "Frutas deshidratadas",
-  "Untables",
-  "Harinas",
-  "Legumbres",
-  "Dulces",
-  "Endulzantes",
-];
 
 export const Nav = () => {
   const { getTotalItems } = useCart();
   const { language, t, translateCategory } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
-  const [categories, setCategories] = useState(defaultCategories);
+  const [categories, setCategories] = useState([]);
   const [categoriesError, setCategoriesError] = useState("");
 
   useEffect(() => {
+    if (!isOpen) return undefined;
     let isCurrent = true;
 
-    getProducts()
-      .then((products) => {
-        const availableCategories = [
-          ...new Set([
-            ...defaultCategories,
-            ...products
-              .map((product) => product.category?.trim())
-              .filter(Boolean),
-          ]),
-        ];
-        if (isCurrent) setCategories(availableCategories);
+    getCategories()
+      .then((availableCategories) => {
+        if (isCurrent) {
+          setCategories(availableCategories);
+          setCategoriesError("");
+        }
       })
       .catch((error) => {
         console.error("No se pudieron cargar las categorías del menú:", error);
         if (isCurrent) {
+          setCategories(defaultCategories);
           setCategoriesError(
             "No se pudieron actualizar las categorías. Se muestran las categorías habituales."
           );
@@ -53,7 +36,7 @@ export const Nav = () => {
     return () => {
       isCurrent = false;
     };
-  }, []);
+  }, [isOpen]);
 
   const sortedCategories = [...categories].sort((first, second) =>
     new Intl.Collator(language).compare(

@@ -47,7 +47,7 @@ export const ProductFormUI = ({
             name="category"
             value={categoryIsCustom ? customCategoryOption : product.category}
             onChange={onChange}
-            disabled={categoriesLoading || categories.length === 0}
+            disabled={categoriesLoading}
             aria-invalid={Boolean(errors.category)}
             aria-describedby={
               errors.category ? "product-category-error" : undefined
@@ -58,7 +58,7 @@ export const ProductFormUI = ({
                 ? "Cargando categorías..."
                 : categories.length > 0
                   ? "Seleccioná una categoría"
-                  : "No hay categorías disponibles"}
+                  : "No hay categorías guardadas"}
             </option>
             {categories.map((category) => (
               <option key={category} value={category}>
@@ -119,7 +119,7 @@ export const ProductFormUI = ({
         <button
           className="btn bg-primary"
           type="submit"
-          disabled={loading || categoriesLoading || categories.length === 0}
+          disabled={loading || categoriesLoading}
         >
           {loading
             ? "Guardando..."

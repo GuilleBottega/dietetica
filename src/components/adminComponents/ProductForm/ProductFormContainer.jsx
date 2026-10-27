@@ -5,13 +5,12 @@ import { validateProduct } from "../../../utils/validateProduct.js";
 import {
   createProduct,
   getProductById,
-  getProducts,
   updateProduct,
 } from "../../../services/products.js";
+import { getCategories } from "../../../services/categories.js";
 import { uploadImage } from "../../../services/uploadImage.js";
 import "./ProductFormContainer.css";
 
-const additionalCategories = ["Aceites"];
 const customCategoryOption = "__new_category__";
 
 export const ProductFormContainer = () => {
@@ -37,47 +36,64 @@ export const ProductFormContainer = () => {
     let isCurrent = true;
 
     const loadFormData = async () => {
-      try {
-        const [products, existingProduct] = await Promise.all([
-          getProducts(),
-          id ? getProductById(id) : Promise.resolve(null),
-        ]);
-        const loadedCategories = [
-          ...new Set([
-            ...additionalCategories,
-            ...products
-              .map((existingProduct) => existingProduct.category?.trim())
-              .filter(Boolean),
-          ]),
-        ].sort((first, second) => first.localeCompare(second, "es"));
+      const categoriesPromise = getCategories()
+        .then((loadedCategories) => {
+          if (isCurrent) setCategories(loadedCategories);
+        })
+        .catch((error) => {
+          console.error("No se pudieron cargar las categorías del formulario:", error);
+          if (isCurrent) {
+            const errorDetails = error.code ?? error.message;
+            setCategoriesError(
+              `No se pudieron cargar las categorías existentes${errorDetails ? ` (${errorDetails})` : ""}. Podés escribir una nueva.`
+            );
+          }
+        })
+        .finally(() => {
+          if (isCurrent) setCategoriesLoading(false);
+        });
 
-        if (isCurrent) {
-          setCategories(loadedCategories);
-          if (id && existingProduct) {
-            setProduct({
-              name: existingProduct.name ?? "",
-              price: String(existingProduct.price ?? ""),
-              category: existingProduct.category ?? "",
-              description: existingProduct.description ?? "",
-            });
-            setExistingImage(existingProduct.image ?? "");
-          } else if (id) {
-            setErrors({ general: "No se encontró el producto para editar." });
-          }
-        }
-      } catch (error) {
-        console.error("No se pudieron cargar los datos del formulario:", error);
-        if (isCurrent) {
-          setCategories(additionalCategories);
-          setCategoriesError(
-            "No se pudieron cargar las categorías existentes. Solo está disponible Aceites."
-          );
-          if (id) {
-            setErrors({
-              general: "No se pudo cargar el producto. Intentá recargar la página.",
-            });
-          }
-        }
+      const productPromise = id
+        ? getProductById(id)
+            .then((existingProduct) => {
+              if (!isCurrent) return;
+
+              if (!existingProduct) {
+                setErrors({ general: "No se encontró el producto para editar." });
+                return;
+              }
+
+              const productCategory = existingProduct.category ?? "";
+              setCategories((currentCategories) =>
+                productCategory && !currentCategories.includes(productCategory)
+                  ? [...currentCategories, productCategory]
+                  : currentCategories
+              );
+              setProduct({
+                name: existingProduct.name ?? "",
+                price: String(existingProduct.price ?? ""),
+                category: productCategory,
+                description: existingProduct.description ?? "",
+              });
+              setExistingImage(existingProduct.image ?? "");
+            })
+            .catch((error) => {
+              console.error("No se pudo cargar el producto para editar:", error);
+              if (isCurrent) {
+                setErrors({
+                  general: "No se pudo cargar el producto. Revisá los permisos de Firestore e intentá recargar la página.",
+                });
+              }
+            })
+            .finally(() => {
+              if (isCurrent) setProductLoading(false);
+            })
+        : Promise.resolve().then(() => {
+            if (isCurrent) setProductLoading(false);
+          });
+
+      try {
+        await Promise.all([categoriesPromise, productPromise]);
       } finally {
         if (isCurrent) {
           setCategoriesLoading(false);
