@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { signOut } from 'firebase/auth';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Link, Outlet, useNavigate } from 'react-router-dom';
 import { auth } from '../firebase-config.js';
 import { useAuth } from '../context/useAuth.js';
 import '../components/adminComponents/AdminAuth.css';
@@ -27,6 +27,10 @@ export default function AdminLayouts() {
         <p className="admin-session__welcome">
           ¡Hola de nuevo, {user.email}!
         </p>
+        <nav className="admin-session__navigation" aria-label="Administración">
+          <Link to="/admin/products">Productos</Link>
+          <Link to="/admin/orders">Pedidos</Link>
+        </nav>
         <button type="button" onClick={handleLogout}>
           Cerrar sesión
         </button>

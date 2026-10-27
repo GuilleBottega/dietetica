@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useCart } from "../../context/CartContext";
 import { useLanguage } from "../../context/useLanguage.js";
 import "./Cart.css";
@@ -5,6 +6,35 @@ import "./Cart.css";
 const Cart = () => {
   const { cart, removeItem, clearCart, getCartTotal, checkout } = useCart();
   const { t, translateProduct, formatPrice } = useLanguage();
+  const [customerName, setCustomerName] = useState("");
+  const [customerPhone, setCustomerPhone] = useState("");
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const [checkoutError, setCheckoutError] = useState("");
+
+  const handleCheckout = async (event) => {
+    event.preventDefault();
+    const customer = {
+      name: customerName.trim(),
+      phone: customerPhone.trim(),
+    };
+
+    if (!customer.name || !customer.phone) {
+      setCheckoutError(t("customerRequired"));
+      return;
+    }
+
+    setIsCheckingOut(true);
+    setCheckoutError("");
+
+    try {
+      await checkout(customer);
+    } catch (error) {
+      console.error("No se pudo registrar el pedido:", error);
+      setCheckoutError(t("purchaseError"));
+    } finally {
+      setIsCheckingOut(false);
+    }
+  };
 
   if (!cart.length) {
     return (
@@ -39,19 +69,51 @@ const Cart = () => {
         })}
       </div>
 
-      <div className="cart-summary">
-        <p>
-          {t("total")}: {formatPrice(getCartTotal())}
-        </p>
-        <div className="cart-actions">
-          <button className="cart-btn" onClick={clearCart}>
-            {t("clearCart")}
-          </button>
-          <button className="cart-btn-primary" onClick={checkout}>
-            {t("checkout")}
-          </button>
+      <form className="cart-checkout" onSubmit={handleCheckout}>
+        <h2>{t("customerDetails")}</h2>
+        <label htmlFor="customer-name">{t("customerName")}</label>
+        <input
+          id="customer-name"
+          name="customerName"
+          type="text"
+          autoComplete="name"
+          required
+          value={customerName}
+          onChange={(event) => setCustomerName(event.target.value)}
+        />
+        <label htmlFor="customer-phone">{t("customerPhone")}</label>
+        <input
+          id="customer-phone"
+          name="customerPhone"
+          type="tel"
+          autoComplete="tel"
+          required
+          value={customerPhone}
+          onChange={(event) => setCustomerPhone(event.target.value)}
+        />
+        {checkoutError && (
+          <p className="cart-checkout__error" role="alert">
+            {checkoutError}
+          </p>
+        )}
+        <div className="cart-summary">
+          <p>
+            {t("total")}: {formatPrice(getCartTotal())}
+          </p>
+          <div className="cart-actions">
+            <button className="cart-btn" type="button" onClick={clearCart}>
+              {t("clearCart")}
+            </button>
+            <button
+              className="cart-btn-primary"
+              type="submit"
+              disabled={isCheckingOut}
+            >
+              {isCheckingOut ? t("savingOrder") : t("checkout")}
+            </button>
+          </div>
         </div>
-      </div>
+      </form>
     </section>
   );
 };

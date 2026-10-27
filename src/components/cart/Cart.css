@@ -40,6 +40,47 @@
   border-top: 1px solid rgba(47, 118, 87, 0.12);
 }
 
+.cart-checkout {
+  display: grid;
+  gap: 0.6rem;
+  max-width: 560px;
+}
+
+.cart-checkout h2 {
+  margin: 0.5rem 0;
+  color: var(--text-h);
+}
+
+.cart-checkout label {
+  color: var(--text-h);
+  font-weight: 700;
+}
+
+.cart-checkout input {
+  min-height: 44px;
+  padding: 0.65rem 0.8rem;
+  color: var(--text);
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font: inherit;
+}
+
+.cart-checkout input:focus-visible {
+  outline: 3px solid rgba(47, 118, 87, 0.3);
+  border-color: var(--primary);
+}
+
+.cart-checkout__error {
+  margin: 0.3rem 0;
+  color: #a13f49;
+}
+
+.cart-checkout button:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
 .cart-summary p {
   font-size: 1.2rem;
   font-weight: 700;

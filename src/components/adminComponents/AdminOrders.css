@@ -1,0 +1,84 @@
+.admin-orders {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.admin-orders h1 {
+  color: var(--text-h);
+}
+
+.admin-orders__list {
+  display: grid;
+  gap: 16px;
+}
+
+.admin-orders__card {
+  padding: 18px;
+  color: var(--text);
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+}
+
+.admin-orders__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.admin-orders__header h2 {
+  margin: 0;
+  color: var(--text-h);
+  font-size: 1.1rem;
+  overflow-wrap: anywhere;
+}
+
+.admin-orders__header span,
+.admin-orders__card > p {
+  color: var(--text-secondary);
+}
+
+.admin-orders__card a {
+  color: var(--primary);
+}
+
+.admin-orders__items {
+  display: grid;
+  gap: 6px;
+  padding-left: 1.25rem;
+}
+
+.admin-orders__total {
+  font-weight: 700;
+}
+
+.admin-orders__status {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-weight: 700;
+}
+
+.admin-orders__status select {
+  min-height: 38px;
+  padding: 6px 10px;
+  color: var(--text);
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font: inherit;
+}
+
+.admin-orders__error {
+  color: #a13f49;
+}
+
+@media (max-width: 520px) {
+  .admin-orders__card {
+    padding: 14px;
+  }
+}

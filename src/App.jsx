@@ -7,6 +7,7 @@ import ProductFormContainer from './components/adminComponents/ProductForm/Produ
 import ProductSuccess from './components/adminComponents/ProductSuccess.jsx';
 import AdminLogin from './components/adminComponents/AdminLogin.jsx';
 import AdminProducts from './components/adminComponents/AdminProducts.jsx';
+import AdminOrders from './components/adminComponents/AdminOrders.jsx';
 import ProtectedRoute from './components/protectedRoute/ProtectedRoute.jsx';
 import AdminLayouts from './layouts/AdminLayouts.jsx';
 import PublicLayouts from './layouts/PublicLayouts.jsx';
@@ -24,6 +25,7 @@ function App() {
           <Route element={<AdminLayouts />}>
             <Route path="/admin" element={<ProductFormContainer />} />
             <Route path="/admin/products" element={<AdminProducts />} />
+            <Route path="/admin/orders" element={<AdminOrders />} />
             <Route
               path="/admin/products/:id/edit"
               element={<ProductFormContainer />}

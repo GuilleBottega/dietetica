@@ -1,6 +1,7 @@
 import { createContext, useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "./useLanguage.js";
+import { createOrder } from "../services/orders.js";
 
 /* -------------------------------------------------------------------------- */
 /*                              CREAMOS CONTEXTO                              */
@@ -75,7 +76,19 @@ export const CartProvider = ({ children }) => {
   };
 
   //Checkout
-  const checkout = () => {
+  const checkout = async (customer) => {
+    const items = cart.map((product) => ({
+      id: String(product.id),
+      name: product.name,
+      price: product.price,
+      quantity: product.quantity || 1,
+    }));
+
+    await createOrder({
+      customer,
+      items,
+      total: getCartTotal(),
+    });
     alert(t("purchaseComplete"));
     clearCart();
     navigate("/");
