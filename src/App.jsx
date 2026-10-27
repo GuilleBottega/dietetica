@@ -7,6 +7,7 @@ import ProductFormContainer from './components/adminComponents/ProductForm/Produ
 import ProductSuccess from './components/adminComponents/ProductSuccess.jsx';
 import AdminLogin from './components/adminComponents/AdminLogin.jsx';
 import AdminProducts from './components/adminComponents/AdminProducts.jsx';
+import ProtectedRoute from './components/protectedRoute/ProtectedRoute.jsx';
 import AdminLayouts from './layouts/AdminLayouts.jsx';
 import PublicLayouts from './layouts/PublicLayouts.jsx';
 
@@ -19,17 +20,19 @@ function App() {
         <Route path="/cart" element={<Cart />} />
         <Route path="/product/:id" element={<ItemDetailContainer />} />
         <Route path="/admin/login" element={<AdminLogin />} />
-        <Route element={<AdminLayouts />}>
-          <Route path="/admin" element={<ProductFormContainer />} />
-          <Route path="/admin/products" element={<AdminProducts />} />
-          <Route
-            path="/admin/products/:id/edit"
-            element={<ProductFormContainer />}
-          />
-          <Route
-            path="/admin/products/success/:id"
-            element={<ProductSuccess />}
-          />
+        <Route element={<ProtectedRoute />}>
+          <Route element={<AdminLayouts />}>
+            <Route path="/admin" element={<ProductFormContainer />} />
+            <Route path="/admin/products" element={<AdminProducts />} />
+            <Route
+              path="/admin/products/:id/edit"
+              element={<ProductFormContainer />}
+            />
+            <Route
+              path="/admin/products/success/:id"
+              element={<ProductSuccess />}
+            />
+          </Route>
         </Route>
       </Route>
     </Routes>

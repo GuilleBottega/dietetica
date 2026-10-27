@@ -1,33 +1,14 @@
 import { useState } from 'react';
 import { signOut } from 'firebase/auth';
-import { Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 import { auth } from '../firebase-config.js';
 import { useAuth } from '../context/useAuth.js';
 import '../components/adminComponents/AdminAuth.css';
 
 export default function AdminLayouts() {
-  const { user, loading } = useAuth();
-  const location = useLocation();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [logoutError, setLogoutError] = useState('');
-
-  if (loading) {
-    return (
-      <p className="admin-auth-status" role="status">
-        Verificando sesión...
-      </p>
-    );
-  }
-
-  if (!user) {
-    return (
-      <Navigate
-        to="/admin/login"
-        replace
-        state={{ from: location }}
-      />
-    );
-  }
 
   const handleLogout = async () => {
     setLogoutError('');
