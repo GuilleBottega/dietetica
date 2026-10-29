@@ -14,3 +14,10 @@ The React Compiler is not enabled on this template because of its impact on dev 
 ## Expanding the ESLint configuration
 
 If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+
+## Despliegue
+
+El proyecto puede desplegarse tanto en Netlify como en Vercel. En ambos servicios, usa el comando `npm run build` y la carpeta de salida `dist`.
+
+- **Netlify:** la configuración de `netlify.toml` y `public/_redirects` mantiene las rutas de React disponibles al abrir o recargar una URL directamente.
+- **Vercel:** `vercel.json` configura el build y redirige las rutas de la aplicación a `index.html`, necesario para React Router.
