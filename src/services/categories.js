@@ -100,6 +100,67 @@ export const setCategory = async (name, batch) => {
   batch.set(getCategoryRef(name), { name });
 };
 
+export const createCategory = async (name) => {
+  await ensureCategoriesInitialized();
+
+  const normalizedName = name.trim();
+  if (!normalizedName) {
+    throw new Error("El nombre de la categoría es obligatorio.");
+  }
+
+  const categories = await getCategories();
+  if (
+    categories.some(
+      (category) => category.toLocaleLowerCase("es") === normalizedName.toLocaleLowerCase("es")
+    )
+  ) {
+    throw new Error("Ya existe una categoría con ese nombre.");
+  }
+
+  await writeBatch(db).set(getCategoryRef(normalizedName), { name: normalizedName }).commit();
+};
+
+export const updateCategory = async (currentName, name) => {
+  await ensureCategoriesInitialized();
+
+  const normalizedName = name.trim();
+  if (!normalizedName) {
+    throw new Error("El nombre de la categoría es obligatorio.");
+  }
+  if (currentName === normalizedName) return;
+
+  const categories = await getCategories();
+  if (!categories.includes(currentName)) {
+    throw new Error("No se encontró la categoría que querés editar.");
+  }
+  if (
+    categories.some(
+      (category) =>
+        category !== currentName &&
+        category.toLocaleLowerCase("es") === normalizedName.toLocaleLowerCase("es")
+    )
+  ) {
+    throw new Error("Ya existe una categoría con ese nombre.");
+  }
+
+  const categoryProducts = await getDocs(
+    query(productsRef, where("category", "==", currentName))
+  );
+  await writeBatch(db)
+    .set(getCategoryRef(normalizedName), { name: normalizedName })
+    .commit();
+
+  for (let index = 0; index < categoryProducts.docs.length; index += 450) {
+    const batch = writeBatch(db);
+    categoryProducts.docs
+      .slice(index, index + 450)
+      .forEach((product) => batch.update(product.ref, { category: normalizedName }));
+    await batch.commit();
+  }
+
+  await deleteDoc(getCategoryRef(currentName));
+};
+
 export const deleteCategory = async (name) => {
   await ensureCategoriesInitialized();
 

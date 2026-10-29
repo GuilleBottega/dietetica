@@ -11,6 +11,8 @@ export default function AdminOrders() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [updatingId, setUpdatingId] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
   useEffect(() => {
     let isCurrent = true;
@@ -30,6 +32,38 @@ export default function AdminOrders() {
       isCurrent = false;
     };
   }, [t]);
+
+  const handleDateSearch = async (event) => {
+    event.preventDefault();
+    if (startDate && endDate && startDate > endDate) {
+      setError(t("invalidOrderDateRange"));
+      return;
+    }
+
+    setLoading(true);
+    setError("");
+    try {
+      setOrders(await getOrders({ startDate, endDate }));
+    } catch {
+      setError(t("orderLoadError"));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleClearDateSearch = async () => {
+    setStartDate("");
+    setEndDate("");
+    setLoading(true);
+    setError("");
+    try {
+      setOrders(await getOrders());
+    } catch {
+      setError(t("orderLoadError"));
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleStatusChange = async (order, status) => {
     setUpdatingId(order.id);
@@ -61,6 +95,34 @@ export default function AdminOrders() {
   return (
     <section className="admin-orders">
       <h1>{t("ordersTitle")}</h1>
+      <form className="admin-orders__date-filter" onSubmit={handleDateSearch}>
+        <label>
+          {t("ordersFromDate")}
+          <input
+            type="date"
+            value={startDate}
+            onChange={(event) => setStartDate(event.target.value)}
+          />
+        </label>
+        <label>
+          {t("ordersToDate")}
+          <input
+            type="date"
+            value={endDate}
+            onChange={(event) => setEndDate(event.target.value)}
+          />
+        </label>
+        <button type="submit" disabled={loading}>
+          {t("searchOrders")}
+        </button>
+        <button
+          type="button"
+          onClick={handleClearDateSearch}
+          disabled={loading || (!startDate && !endDate)}
+        >
+          {t("clearOrderDates")}
+        </button>
+      </form>
       {loading && <p role="status">{t("loadingOrders")}</p>}
       {error && <p className="admin-orders__error" role="alert">{error}</p>}
       {!loading && !error && orders.length === 0 && <p>{t("noOrders")}</p>}

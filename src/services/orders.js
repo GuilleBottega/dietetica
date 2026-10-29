@@ -7,6 +7,7 @@ import {
   query,
   serverTimestamp,
   updateDoc,
+  where,
 } from "firebase/firestore";
 import { db } from "../firebase-config.js";
 
@@ -28,9 +29,22 @@ export const createOrder = async ({ customer, items, total }) => {
   }
 };
 
-export const getOrders = async () => {
+export const getOrders = async ({ startDate, endDate } = {}) => {
   try {
-    const snapshot = await getDocs(query(ordersRef, orderBy("createdAt", "desc")));
+    const constraints = [];
+    if (startDate) {
+      const [year, month, day] = startDate.split("-").map(Number);
+      constraints.push(where("createdAt", ">=", new Date(year, month - 1, day)));
+    }
+    if (endDate) {
+      const [year, month, day] = endDate.split("-").map(Number);
+      constraints.push(
+        where("createdAt", "<", new Date(year, month - 1, day + 1))
+      );
+    }
+    constraints.push(orderBy("createdAt", "desc"));
+
+    const snapshot = await getDocs(query(ordersRef, ...constraints));
     return snapshot.docs.map((orderDocument) => ({
       id: orderDocument.id,
       ...orderDocument.data(),

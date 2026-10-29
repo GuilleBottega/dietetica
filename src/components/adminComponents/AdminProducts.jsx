@@ -5,8 +5,10 @@ import {
   getProducts,
 } from "../../services/products.js";
 import {
+  createCategory,
   deleteCategory,
   initializeCategories,
+  updateCategory,
 } from "../../services/categories.js";
 import "./AdminProducts.css";
 
@@ -18,6 +20,10 @@ export default function AdminProducts() {
   const [categoriesError, setCategoriesError] = useState("");
   const [deletingId, setDeletingId] = useState("");
   const [deletingCategory, setDeletingCategory] = useState("");
+  const [categoryName, setCategoryName] = useState("");
+  const [editingCategory, setEditingCategory] = useState("");
+  const [savingCategory, setSavingCategory] = useState(false);
+  const [categorySaveError, setCategorySaveError] = useState("");
   const [deleteError, setDeleteError] = useState("");
 
   useEffect(() => {
@@ -102,6 +108,10 @@ export default function AdminProducts() {
           (currentCategory) => currentCategory !== category
         )
       );
+      if (editingCategory === category) {
+        setEditingCategory("");
+        setCategoryName("");
+      }
     } catch (deleteCategoryError) {
       console.error("No se pudo eliminar la categoría:", deleteCategoryError);
       try {
@@ -123,6 +133,66 @@ export default function AdminProducts() {
     } finally {
       setDeletingCategory("");
     }
+  };
+
+  const handleSaveCategory = async (event) => {
+    event.preventDefault();
+    const normalizedName = categoryName.trim();
+    if (!normalizedName) {
+      setCategorySaveError("El nombre de la categoría es obligatorio.");
+      return;
+    }
+
+    setSavingCategory(true);
+    setCategorySaveError("");
+    try {
+      if (editingCategory) {
+        await updateCategory(editingCategory, normalizedName);
+        setCategories((currentCategories) =>
+          currentCategories
+            .map((category) =>
+              category === editingCategory ? normalizedName : category
+            )
+            .sort((first, second) => first.localeCompare(second, "es"))
+        );
+        setProducts((currentProducts) =>
+          currentProducts.map((product) =>
+            product.category?.trim() === editingCategory
+              ? { ...product, category: normalizedName }
+              : product
+          )
+        );
+      } else {
+        await createCategory(normalizedName);
+        setCategories((currentCategories) =>
+          [...currentCategories, normalizedName].sort((first, second) =>
+            first.localeCompare(second, "es")
+          )
+        );
+      }
+
+      setCategoryName("");
+      setEditingCategory("");
+    } catch (saveError) {
+      console.error("No se pudo guardar la categoría:", saveError);
+      setCategorySaveError(
+        saveError.message || "No se pudo guardar la categoría. Intentá nuevamente."
+      );
+    } finally {
+      setSavingCategory(false);
+    }
+  };
+
+  const handleEditCategory = (category) => {
+    setEditingCategory(category);
+    setCategoryName(category);
+    setCategorySaveError("");
+  };
+
+  const handleCancelCategoryEdit = () => {
+    setEditingCategory("");
+    setCategoryName("");
+    setCategorySaveError("");
   };
 
   return (
@@ -150,9 +220,47 @@ export default function AdminProducts() {
         <p>Todavía no hay productos para editar.</p>
       )}
 
-      {!loading && !error && !categoriesError && categories.length > 0 && (
+      {!loading && !error && !categoriesError && (
         <section className="admin-products__categories" aria-labelledby="admin-categories-title">
           <h2 id="admin-categories-title">Administrar categorías</h2>
+          <form className="admin-products__category-form" onSubmit={handleSaveCategory}>
+            <label htmlFor="admin-category-name">
+              {editingCategory ? "Editar categoría:" : "Nueva categoría:"}
+            </label>
+            <input
+              id="admin-category-name"
+              type="text"
+              value={categoryName}
+              onChange={(event) => setCategoryName(event.target.value)}
+              disabled={savingCategory}
+            />
+            <button
+              className="admin-products__add"
+              type="submit"
+              disabled={savingCategory || Boolean(deletingId || deletingCategory)}
+            >
+              {savingCategory
+                ? "Guardando..."
+                : editingCategory
+                  ? "Guardar cambios"
+                  : "Agregar categoría"}
+            </button>
+            {editingCategory && (
+              <button
+                className="admin-products__category-cancel"
+                type="button"
+                onClick={handleCancelCategoryEdit}
+                disabled={savingCategory}
+              >
+                Cancelar
+              </button>
+            )}
+            {categorySaveError && (
+              <p className="admin-products__error" role="alert">
+                {categorySaveError}
+              </p>
+            )}
+          </form>
           <ul className="admin-products__category-list">
             {categories.map((category) => {
               const productCount = products.filter(
@@ -164,16 +272,26 @@ export default function AdminProducts() {
                   <span>
                     {category} ({productCount} {productCount === 1 ? "producto" : "productos"})
                   </span>
-                  <button
-                    className="admin-products__delete"
-                    type="button"
-                    disabled={Boolean(deletingId || deletingCategory)}
-                    onClick={() => handleDeleteCategory(category)}
-                  >
-                    {deletingCategory === category
-                      ? "Eliminando..."
-                      : "Eliminar categoría"}
-                  </button>
+                  <div className="admin-products__category-actions">
+                    <button
+                      className="admin-products__edit"
+                      type="button"
+                      disabled={Boolean(deletingId || deletingCategory || savingCategory)}
+                      onClick={() => handleEditCategory(category)}
+                    >
+                      Editar
+                    </button>
+                    <button
+                      className="admin-products__delete"
+                      type="button"
+                      disabled={Boolean(deletingId || deletingCategory || savingCategory)}
+                      onClick={() => handleDeleteCategory(category)}
+                    >
+                      {deletingCategory === category
+                        ? "Eliminando..."
+                        : "Eliminar categoría"}
+                    </button>
+                  </div>
                 </li>
               );
             })}
