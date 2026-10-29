@@ -5,6 +5,15 @@ import "./AdminOrders.css";
 
 const orderStatuses = ["pending", "confirmed", "delivered", "cancelled"];
 
+const escapeHtml = (value) =>
+  String(value).replace(/[&<>"']/g, (character) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;",
+  })[character]);
+
 export default function AdminOrders() {
   const { t, formatPrice, language } = useLanguage();
   const [orders, setOrders] = useState([]);
@@ -13,6 +22,7 @@ export default function AdminOrders() {
   const [updatingId, setUpdatingId] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [exportError, setExportError] = useState("");
 
   useEffect(() => {
     let isCurrent = true;
@@ -89,6 +99,75 @@ export default function AdminOrders() {
     }
   };
 
+  const handleExportPdf = () => {
+    if (orders.length === 0) return;
+
+    const printWindow = window.open("", "_blank");
+    if (!printWindow) {
+      setExportError(t("orderPdfPopupError"));
+      return;
+    }
+
+    setExportError("");
+    const locale = language === "en" ? "en-US" : "es-AR";
+    const printableOrders = orders
+      .map((order) => {
+        const createdAt = order.createdAt?.toDate?.();
+        const date = createdAt
+          ? createdAt.toLocaleString(locale)
+          : t("loading");
+        const items = (order.items ?? [])
+          .map(
+            (item) =>
+              `<li>${escapeHtml(item.name)} × ${escapeHtml(item.quantity)} — ${escapeHtml(formatPrice(item.price * item.quantity))}</li>`
+          )
+          .join("");
+
+        return `<article class="order">
+          <header><h2>${escapeHtml(t("orderNumber"))} #${escapeHtml(order.id)}</h2><span>${escapeHtml(date)}</span></header>
+          <p><strong>${escapeHtml(t("customer"))}:</strong> ${escapeHtml(order.customer?.name ?? "")} — ${escapeHtml(order.customer?.phone ?? "")}</p>
+          <ul>${items}</ul>
+          <p><strong>${escapeHtml(t("orderStatus"))}:</strong> ${escapeHtml(statusLabels[order.status] ?? order.status ?? "")}</p>
+          <p class="total"><strong>${escapeHtml(t("total"))}:</strong> ${escapeHtml(formatPrice(order.total))}</p>
+        </article>`;
+      })
+      .join("");
+    const dateRange = startDate || endDate
+      ? `${startDate ? escapeHtml(startDate) : "—"} – ${endDate ? escapeHtml(endDate) : "—"}`
+      : t("allOrderDates");
+
+    printWindow.document.write(`<!doctype html>
+      <html lang="${language === "en" ? "en" : "es"}">
+        <head>
+          <meta charset="utf-8">
+          <title>${escapeHtml(t("ordersTitle"))}</title>
+          <style>
+            body { font-family: Arial, sans-serif; margin: 32px; color: #222; }
+            h1 { margin-bottom: 6px; font-size: 24px; }
+            .range, .generated { color: #555; margin: 4px 0; }
+            .order { margin: 18px 0; padding: 14px; border: 1px solid #bbb; border-radius: 8px; break-inside: avoid; }
+            .order header { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; }
+            .order h2 { margin: 0; font-size: 16px; }
+            .order header span { color: #555; }
+            .order ul { padding-left: 22px; }
+            .total { font-size: 16px; }
+            @media print { body { margin: 15mm; } }
+          </style>
+        </head>
+        <body>
+          <h1>${escapeHtml(t("ordersTitle"))}</h1>
+          <p class="range">${escapeHtml(t("orderReportDateRange"))}: ${escapeHtml(dateRange)}</p>
+          <p class="generated">${escapeHtml(t("reportGenerated"))}: ${escapeHtml(new Date().toLocaleString(locale))}</p>
+          ${printableOrders}
+        </body>
+      </html>`);
+    printWindow.document.close();
+    window.setTimeout(() => {
+      printWindow.focus();
+      printWindow.print();
+    }, 250);
+  };
+
   const statusLabels = {
     pending: t("orderPending"),
     confirmed: t("orderConfirmed"),
@@ -126,7 +205,19 @@ export default function AdminOrders() {
         >
           {t("clearOrderDates")}
         </button>
+        <button
+          type="button"
+          onClick={handleExportPdf}
+          disabled={loading || orders.length === 0}
+        >
+          {t("saveOrdersPdf")}
+        </button>
       </form>
+      {exportError && (
+        <p className="admin-orders__error" role="alert">
+          {exportError}
+        </p>
+      )}
       {loading && <p role="status">{t("loadingOrders")}</p>}
       {error && <p className="admin-orders__error" role="alert">{error}</p>}
       {!loading && !error && orders.length === 0 && <p>{t("noOrders")}</p>}

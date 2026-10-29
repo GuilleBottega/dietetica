@@ -42,6 +42,11 @@
   opacity: 0.65;
 }
 
+.admin-orders__date-filter button:focus-visible {
+  outline: 3px solid #e7a54d;
+  outline-offset: 2px;
+}
+
 .admin-orders__list {
   display: grid;
   gap: 16px;
