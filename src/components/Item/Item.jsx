@@ -6,7 +6,6 @@ export const Item = ({
   name,
   price,
   stock = 0,
-  stockCapacity = stock,
   description,
   image,
   children,
@@ -16,7 +15,7 @@ export const Item = ({
   const stockStatus =
     stock <= 0
       ? "outOfStock"
-      : stockCapacity > 0 && stock / stockCapacity <= 0.2
+      : stock <= 10
         ? "lowStock"
         : "stockAvailable";
 
