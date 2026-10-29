@@ -5,7 +5,6 @@ import {
   getDoc,
   getDocs,
   query,
-  runTransaction,
   where,
   writeBatch,
 } from "firebase/firestore";
@@ -139,34 +138,34 @@ export const adjustProductStock = async (id, amount) => {
 
   try {
     const productRef = doc(productsRef, id);
-    return await runTransaction(db, async (transaction) => {
-      const productSnapshot = await transaction.get(productRef);
-      if (!productSnapshot.exists()) {
-        throw new Error("No se encontró el producto.");
-      }
+    const productSnapshot = await getDoc(productRef);
+    if (!productSnapshot.exists()) {
+      throw new Error("No se encontró el producto.");
+    }
 
-      const product = productSnapshot.data();
-      const parsedStock = Number(product.stock);
-      const currentStock =
-        Number.isSafeInteger(parsedStock) && parsedStock >= 0 ? parsedStock : 0;
-      const storedCapacity = product.stockCapacity;
-      const currentCapacity =
-        Number.isSafeInteger(storedCapacity) && storedCapacity >= currentStock
-          ? storedCapacity
-          : currentStock;
-      const nextStock = currentStock + amount;
-      if (nextStock < 0) {
-        throw new Error("El stock no puede ser menor que cero.");
-      }
+    const product = productSnapshot.data();
+    const parsedStock = Number(product.stock);
+    const currentStock =
+      Number.isSafeInteger(parsedStock) && parsedStock >= 0 ? parsedStock : 0;
+    const storedCapacity = product.stockCapacity;
+    const currentCapacity =
+      Number.isSafeInteger(storedCapacity) && storedCapacity >= currentStock
+        ? storedCapacity
+        : currentStock;
+    const nextStock = currentStock + amount;
+    if (nextStock < 0) {
+      throw new Error("El stock no puede ser menor que cero.");
+    }
 
-      const stockUpdate = { stock: nextStock };
-      if (Number.isSafeInteger(storedCapacity)) {
-        stockUpdate.stockCapacity = Math.max(currentCapacity, nextStock);
-      }
+    const stockUpdate = { stock: nextStock };
+    if (Number.isSafeInteger(storedCapacity)) {
+      stockUpdate.stockCapacity = Math.max(currentCapacity, nextStock);
+    }
 
-      transaction.update(productRef, stockUpdate);
-      return nextStock;
-    });
+    const batch = writeBatch(db);
+    batch.update(productRef, stockUpdate);
+    await batch.commit();
+    return nextStock;
   } catch (error) {
     console.error("No se pudo ajustar el stock del producto:", error);
     throw error;
