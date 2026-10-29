@@ -34,23 +34,33 @@ export const CartProvider = ({ children }) => {
   };
 
   const addItem = (item, quantity = 1) => {
-    const quantityToAdd = Math.max(1, Number(quantity) || 1);
+    const quantityToAdd = Math.max(1, Math.floor(Number(quantity) || 1));
+    const stock = Number.isInteger(item.stock) && item.stock > 0 ? item.stock : 0;
 
     setCart((prev) => {
       const productId = String(item.id);
       const existingItem = prev.find((element) => String(element.id) === productId);
+      const currentQuantity = existingItem?.quantity || 0;
+      const availableStock = stock - currentQuantity;
+
+      if (availableStock <= 0) {
+        alert(t("outOfStock"));
+        return prev;
+      }
+
+      const allowedQuantity = Math.min(quantityToAdd, availableStock);
+      if (allowedQuantity < quantityToAdd) alert(t("quantityLimited"));
 
       if (existingItem) {
-        alert(t("addedAnother"));
         return prev.map((element) =>
           String(element.id) === productId
-            ? { ...element, quantity: (element.quantity || 1) + quantityToAdd }
+            ? { ...element, quantity: currentQuantity + allowedQuantity }
             : element
         );
       }
 
       alert(t("addedToCart"));
-      return [...prev, { ...item, quantity: quantityToAdd }];
+      return [...prev, { ...item, quantity: allowedQuantity }];
     });
   };
 
@@ -84,11 +94,16 @@ export const CartProvider = ({ children }) => {
       quantity: product.quantity || 1,
     }));
 
-    await createOrder({
-      customer,
-      items,
-      total: getCartTotal(),
-    });
+    try {
+      await createOrder({ customer, items });
+    } catch (error) {
+      if (error.code === "insufficient-stock") {
+        const stockError = new Error(t("stockUnavailable"));
+        stockError.code = error.code;
+        throw stockError;
+      }
+      throw error;
+    }
     alert(t("purchaseComplete"));
     clearCart();
     navigate("/");

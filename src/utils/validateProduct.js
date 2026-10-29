@@ -17,6 +17,15 @@ export const validateProduct = (product, { requireImage = true } = {}) => {
     errors.category = "La categoria es obligatoria";
   }
 
+  const stock = Number(product.stock);
+  if (
+    product.stock === "" ||
+    !Number.isInteger(stock) ||
+    stock < 0
+  ) {
+    errors.stock = "El stock debe ser un número entero igual o mayor que 0";
+  }
+
   if (requireImage && !product.file) {
     errors.file = "Debes seleccionar una imagen";
   }

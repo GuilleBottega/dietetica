@@ -58,6 +58,21 @@
   overflow: hidden;
 }
 
+.card p.card__stock {
+  flex: 0;
+  padding: 0 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.card p.card__stock--outOfStock {
+  color: #a13f49;
+}
+
+.card p.card__stock--lowStock {
+  color: #a36a12;
+}
+
 @media (max-width: 600px) {
   .card {
     min-height: 0;
@@ -80,5 +95,10 @@
   .card p:last-of-type {
     padding: 12px;
     font-size: 1rem;
+  }
+
+  .card p.card__stock {
+    padding: 0 12px;
+    font-size: 0.78rem;
   }
 }

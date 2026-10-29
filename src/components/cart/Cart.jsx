@@ -30,7 +30,11 @@ const Cart = () => {
       await checkout(customer);
     } catch (error) {
       console.error("No se pudo registrar el pedido:", error);
-      setCheckoutError(t("purchaseError"));
+      setCheckoutError(
+        error.code === "insufficient-stock"
+          ? t("stockUnavailable")
+          : t("purchaseError")
+      );
     } finally {
       setIsCheckingOut(false);
     }

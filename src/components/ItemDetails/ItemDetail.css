@@ -43,6 +43,11 @@
   cursor: pointer;
 }
 
+.quantity-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
 :root[data-theme="dark"] .quantity-btn,
 :root[data-theme="dark"] .quantity-selector input {
   background: #26372c;
@@ -98,6 +103,17 @@
   transform: translateY(-1px);
   box-shadow: 0 12px 22px rgba(47, 107, 71, 0.24);
   filter: brightness(1.02);
+}
+
+.add-to-cart-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+  filter: grayscale(0.5);
+}
+
+.add-to-cart-btn:disabled:hover {
+  transform: none;
+  box-shadow: 0 8px 18px rgba(47, 107, 71, 0.18);
 }
 
 .add-to-cart-btn:active {

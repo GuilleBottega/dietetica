@@ -181,6 +181,35 @@
   font-size: 0.9rem;
 }
 
+.admin-products__stock-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.admin-products__stock-actions button {
+  width: 36px;
+  height: 36px;
+  color: var(--text-h);
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font: inherit;
+  font-size: 1.2rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.admin-products__stock-actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.admin-products__stock-actions button:focus-visible {
+  outline: 3px solid #e7a54d;
+  outline-offset: 2px;
+}
+
 .admin-products__error {
   color: #a13f49;
 }
@@ -193,6 +222,7 @@
 
   .admin-products__item {
     gap: 10px;
+    flex-wrap: wrap;
     padding: 10px;
   }
 
@@ -218,6 +248,15 @@
     width: 48px;
     height: 48px;
     flex-basis: 48px;
+  }
+
+  .admin-products__stock-actions {
+    margin-left: auto;
+  }
+
+  .admin-products__edit,
+  .admin-products__delete {
+    flex: 1;
   }
 
   .admin-products__edit {

@@ -78,8 +78,12 @@ export default function AdminOrders() {
             : currentOrder
         )
       );
-    } catch {
-      setError(t("orderUpdateError"));
+    } catch (updateError) {
+      setError(
+        updateError.code === "insufficient-stock"
+          ? t("orderStockInsufficient")
+          : t("orderUpdateError")
+      );
     } finally {
       setUpdatingId("");
     }

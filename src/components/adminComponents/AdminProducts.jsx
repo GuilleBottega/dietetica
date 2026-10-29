@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {
+  adjustProductStock,
   deleteProduct,
   getProducts,
 } from "../../services/products.js";
@@ -19,6 +20,8 @@ export default function AdminProducts() {
   const [error, setError] = useState("");
   const [categoriesError, setCategoriesError] = useState("");
   const [deletingId, setDeletingId] = useState("");
+  const [updatingStockId, setUpdatingStockId] = useState("");
+  const [stockError, setStockError] = useState("");
   const [deletingCategory, setDeletingCategory] = useState("");
   const [categoryName, setCategoryName] = useState("");
   const [editingCategory, setEditingCategory] = useState("");
@@ -82,6 +85,28 @@ export default function AdminProducts() {
       );
     } finally {
       setDeletingId("");
+    }
+  };
+
+  const handleAdjustStock = async (product, amount) => {
+    setUpdatingStockId(product.id);
+    setStockError("");
+    try {
+      const stock = await adjustProductStock(product.id, amount);
+      setProducts((currentProducts) =>
+        currentProducts.map((currentProduct) =>
+          currentProduct.id === product.id
+            ? { ...currentProduct, stock }
+            : currentProduct
+        )
+      );
+    } catch (adjustError) {
+      console.error("No se pudo ajustar el stock:", adjustError);
+      setStockError(
+        `No se pudo actualizar el stock de "${product.name}". Revisá los permisos de Firestore e intentá nuevamente.`
+      );
+    } finally {
+      setUpdatingStockId("");
     }
   };
 
@@ -211,6 +236,11 @@ export default function AdminProducts() {
           {deleteError}
         </p>
       )}
+      {stockError && (
+        <p className="admin-products__error" role="alert">
+          {stockError}
+        </p>
+      )}
       {categoriesError && (
         <p className="admin-products__error" role="alert">
           {categoriesError}
@@ -309,6 +339,37 @@ export default function AdminProducts() {
               <div className="admin-products__details">
                 <h2>{product.name}</h2>
                 <p>{product.category}</p>
+                <p>
+                  Stock:{" "}
+                  {Number.isInteger(product.stock) && product.stock >= 0
+                    ? product.stock
+                    : 0}
+                </p>
+              </div>
+              <div className="admin-products__stock-actions">
+                <button
+                  type="button"
+                  aria-label={`Restar una unidad de stock de ${product.name}`}
+                  disabled={
+                    Boolean(deletingId || deletingCategory || updatingStockId) ||
+                    !Number.isInteger(product.stock) ||
+                    product.stock <= 0
+                  }
+                  onClick={() => handleAdjustStock(product, -1)}
+                >
+                  −
+                </button>
+                <button
+                  type="button"
+                  aria-label={`Sumar una unidad de stock de ${product.name}`}
+                  disabled={Boolean(deletingId || deletingCategory || updatingStockId)}
+                  onClick={() => handleAdjustStock(product, 1)}
+                >
+                  +
+                </button>
+                {updatingStockId === product.id && (
+                  <span role="status">Actualizando...</span>
+                )}
               </div>
               <Link
                 className="admin-products__edit"
@@ -319,7 +380,7 @@ export default function AdminProducts() {
               <button
                 className="admin-products__delete"
                 type="button"
-                disabled={Boolean(deletingId || deletingCategory)}
+                disabled={Boolean(deletingId || deletingCategory || updatingStockId)}
                 onClick={() => handleDelete(product)}
               >
                 {deletingId === product.id ? "Eliminando..." : "Eliminar"}

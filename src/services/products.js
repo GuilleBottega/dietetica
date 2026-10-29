@@ -5,6 +5,7 @@ import {
   getDoc,
   getDocs,
   query,
+  runTransaction,
   where,
   writeBatch,
 } from "firebase/firestore";
@@ -112,6 +113,44 @@ export const updateProduct = async (id, productData) => {
     await batch.commit();
   } catch (error) {
     console.error("Error al actualizar producto:", error);
+    throw error;
+  }
+};
+
+export const adjustProductStock = async (id, amount) => {
+  if (amount !== 1 && amount !== -1) {
+    throw new Error("El stock solo se puede ajustar de a una unidad.");
+  }
+
+  try {
+    const productRef = doc(productsRef, id);
+    return await runTransaction(db, async (transaction) => {
+      const productSnapshot = await transaction.get(productRef);
+      if (!productSnapshot.exists()) {
+        throw new Error("No se encontró el producto.");
+      }
+
+      const storedStock = productSnapshot.data().stock;
+      const currentStock =
+        Number.isInteger(storedStock) && storedStock >= 0 ? storedStock : 0;
+      const storedCapacity = productSnapshot.data().stockCapacity;
+      const currentCapacity =
+        Number.isInteger(storedCapacity) && storedCapacity >= currentStock
+          ? storedCapacity
+          : currentStock;
+      const nextStock = currentStock + amount;
+      if (nextStock < 0) {
+        throw new Error("El stock no puede ser menor que cero.");
+      }
+
+      transaction.update(productRef, {
+        stock: nextStock,
+        stockCapacity: Math.max(currentCapacity, nextStock),
+      });
+      return nextStock;
+    });
+  } catch (error) {
+    console.error("No se pudo ajustar el stock del producto:", error);
     throw error;
   }
 };

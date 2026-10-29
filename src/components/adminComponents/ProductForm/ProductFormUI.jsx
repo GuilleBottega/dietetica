@@ -39,6 +39,26 @@ export const ProductFormUI = ({
           />
           {errors.price && <p className="error">{errors.price}</p>}
         </div>
+        <div>
+          <label htmlFor="product-stock">Stock disponible:</label>
+          <input
+            id="product-stock"
+            type="number"
+            name="stock"
+            value={product.stock}
+            onChange={onChange}
+            min="0"
+            step="1"
+            required
+            aria-invalid={Boolean(errors.stock)}
+            aria-describedby={errors.stock ? "product-stock-error" : undefined}
+          />
+          {errors.stock && (
+            <p className="error" id="product-stock-error">
+              {errors.stock}
+            </p>
+          )}
+        </div>
 
         <div>
           <label htmlFor="product-category">Categoría:</label>

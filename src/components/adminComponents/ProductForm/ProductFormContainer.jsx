@@ -28,6 +28,7 @@ export const ProductFormContainer = () => {
   const [product, setProduct] = useState({
     name: "",
     price: "",
+    stock: "0",
     category: "",
     description: "",
   });
@@ -72,6 +73,7 @@ export const ProductFormContainer = () => {
               setProduct({
                 name: existingProduct.name ?? "",
                 price: String(existingProduct.price ?? ""),
+                stock: String(existingProduct.stock ?? 0),
                 category: productCategory,
                 description: existingProduct.description ?? "",
               });
@@ -160,6 +162,8 @@ export const ProductFormContainer = () => {
       const productData = {
         name: product.name.trim(),
         price: Number(product.price),
+        stock: Number(product.stock),
+        stockCapacity: Number(product.stock),
         category: product.category.trim(),
         description: product.description.trim(),
         image,
@@ -170,7 +174,13 @@ export const ProductFormContainer = () => {
         navigate("/admin/products", { replace: true });
       } else {
         const newProductId = await createProduct(productData);
-        setProduct({ name: "", price: "", category: "", description: "" });
+        setProduct({
+          name: "",
+          price: "",
+          stock: "0",
+          category: "",
+          description: "",
+        });
         setFile(null);
         navigate(`/admin/products/success/${newProductId}`, { replace: true });
       }
