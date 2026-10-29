@@ -63,6 +63,51 @@
   list-style: none;
 }
 
+.admin-products__stock-report {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 12px 14px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.admin-products__stock-report p {
+  margin: 0;
+  color: var(--text-secondary);
+}
+
+.admin-products__stock-report > div {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.admin-products__stock-report button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.admin-products__product-selection {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.admin-products__product-selection input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--primary);
+}
+
 .admin-products__categories {
   margin: 0 0 32px;
 }
@@ -195,6 +240,16 @@
     gap: 10px;
     flex-wrap: wrap;
     padding: 10px;
+  }
+
+  .admin-products__stock-report {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .admin-products__stock-report > div {
+    flex-direction: column;
+    align-items: stretch;
   }
 
   .admin-products__category {

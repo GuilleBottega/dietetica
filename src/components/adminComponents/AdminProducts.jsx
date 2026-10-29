@@ -14,6 +14,7 @@ import "./AdminProducts.css";
 
 export default function AdminProducts() {
   const [products, setProducts] = useState([]);
+  const [selectedProductIds, setSelectedProductIds] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -25,6 +26,10 @@ export default function AdminProducts() {
   const [savingCategory, setSavingCategory] = useState(false);
   const [categorySaveError, setCategorySaveError] = useState("");
   const [deleteError, setDeleteError] = useState("");
+  const [stockReportError, setStockReportError] = useState("");
+  const selectedProducts = products.filter((product) =>
+    selectedProductIds.includes(product.id)
+  );
 
   useEffect(() => {
     let isCurrent = true;
@@ -83,6 +88,79 @@ export default function AdminProducts() {
     } finally {
       setDeletingId("");
     }
+  };
+
+  const handleProductSelection = (productId) => {
+    setSelectedProductIds((currentIds) =>
+      currentIds.includes(productId)
+        ? currentIds.filter((id) => id !== productId)
+        : [...currentIds, productId]
+    );
+  };
+
+  const handleSelectAllProducts = () => {
+    setSelectedProductIds(products.map((product) => product.id));
+  };
+
+  const handleExportStockPdf = () => {
+    if (selectedProducts.length === 0) return;
+
+    const printWindow = window.open("", "_blank");
+    if (!printWindow) {
+      setStockReportError(
+        "El navegador bloqueó la ventana del reporte. Permití las ventanas emergentes e intentá nuevamente."
+      );
+      return;
+    }
+    setStockReportError("");
+
+    const escapeHtml = (value) =>
+      String(value).replace(/[&<>"']/g, (character) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;",
+      })[character]);
+    const rows = selectedProducts
+      .map((product) => {
+        const stock =
+          Number.isInteger(product.stock) && product.stock >= 0
+            ? product.stock
+            : 0;
+        return `<tr><td>${escapeHtml(product.name)}</td><td>${stock}</td></tr>`;
+      })
+      .join("");
+
+    printWindow.document.write(`<!doctype html>
+      <html lang="es">
+        <head>
+          <meta charset="utf-8">
+          <title>Stock actual de productos</title>
+          <style>
+            body { font-family: Arial, sans-serif; margin: 32px; color: #222; }
+            h1 { font-size: 22px; margin-bottom: 8px; }
+            p { color: #555; margin-bottom: 20px; }
+            table { width: 100%; border-collapse: collapse; }
+            th, td { padding: 10px 12px; border: 1px solid #bbb; text-align: left; }
+            th { background: #f0f0f0; }
+            @media print { body { margin: 15mm; } }
+          </style>
+        </head>
+        <body>
+          <h1>Stock actual de productos</h1>
+          <p>Generado: ${escapeHtml(new Date().toLocaleString("es-AR"))}</p>
+          <table>
+            <thead><tr><th>Producto</th><th>Stock actual</th></tr></thead>
+            <tbody>${rows}</tbody>
+          </table>
+        </body>
+      </html>`);
+    printWindow.document.close();
+    window.setTimeout(() => {
+      printWindow.focus();
+      printWindow.print();
+    }, 250);
   };
 
   const handleDeleteCategory = async (category) => {
@@ -300,9 +378,54 @@ export default function AdminProducts() {
       )}
 
       {!loading && !error && products.length > 0 && (
-        <ul className="admin-products__list">
+        <>
+          <div className="admin-products__stock-report">
+            <p>
+              {selectedProducts.length} producto(s) seleccionado(s) para el reporte
+            </p>
+            <div>
+              <button
+                className="admin-products__category-cancel"
+                type="button"
+                onClick={handleSelectAllProducts}
+              >
+                Seleccionar todos
+              </button>
+              <button
+                className="admin-products__category-cancel"
+                type="button"
+                onClick={() => setSelectedProductIds([])}
+                disabled={selectedProductIds.length === 0}
+              >
+                Limpiar selección
+              </button>
+              <button
+                className="admin-products__add"
+                type="button"
+                onClick={handleExportStockPdf}
+                disabled={selectedProducts.length === 0}
+              >
+                Imprimir / Guardar PDF
+              </button>
+            </div>
+          </div>
+          {stockReportError && (
+            <p className="admin-products__error" role="alert">
+              {stockReportError}
+            </p>
+          )}
+          <ul className="admin-products__list">
           {products.map((product) => (
             <li className="admin-products__item" key={product.id}>
+              <label className="admin-products__product-selection">
+                <input
+                  type="checkbox"
+                  checked={selectedProductIds.includes(product.id)}
+                  onChange={() => handleProductSelection(product.id)}
+                  aria-label={`Incluir ${product.name} en el PDF de stock`}
+                />
+                <span>Incluir en PDF</span>
+              </label>
               {product.image && (
                 <img src={product.image} alt="" loading="lazy" />
               )}
@@ -332,7 +455,8 @@ export default function AdminProducts() {
               </button>
             </li>
           ))}
-        </ul>
+          </ul>
+        </>
       )}
     </section>
   );
