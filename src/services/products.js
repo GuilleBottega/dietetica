@@ -118,8 +118,8 @@ export const updateProduct = async (id, productData) => {
 };
 
 export const adjustProductStock = async (id, amount) => {
-  if (amount !== 1 && amount !== -1) {
-    throw new Error("El stock solo se puede ajustar de a una unidad.");
+  if (!Number.isInteger(amount) || amount === 0) {
+    throw new Error("El ajuste de stock debe ser un entero distinto de cero.");
   }
 
   try {

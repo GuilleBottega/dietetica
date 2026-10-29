@@ -187,6 +187,22 @@
   gap: 6px;
 }
 
+.admin-products__stock-actions label {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+.admin-products__stock-actions input {
+  width: 64px;
+  height: 36px;
+  padding: 4px 6px;
+  color: var(--text-h);
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font: inherit;
+}
+
 .admin-products__stock-actions button {
   width: 36px;
   height: 36px;

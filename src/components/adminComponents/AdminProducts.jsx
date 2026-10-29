@@ -21,6 +21,7 @@ export default function AdminProducts() {
   const [categoriesError, setCategoriesError] = useState("");
   const [deletingId, setDeletingId] = useState("");
   const [updatingStockId, setUpdatingStockId] = useState("");
+  const [stockAdjustmentAmounts, setStockAdjustmentAmounts] = useState({});
   const [stockError, setStockError] = useState("");
   const [deletingCategory, setDeletingCategory] = useState("");
   const [categoryName, setCategoryName] = useState("");
@@ -88,11 +89,17 @@ export default function AdminProducts() {
     }
   };
 
-  const handleAdjustStock = async (product, amount) => {
+  const handleAdjustStock = async (product, direction) => {
+    const quantity = Number(stockAdjustmentAmounts[product.id] ?? 1);
+    if (!Number.isInteger(quantity) || quantity <= 0) {
+      setStockError("Ingresá una cantidad entera mayor que cero para ajustar el stock.");
+      return;
+    }
+
     setUpdatingStockId(product.id);
     setStockError("");
     try {
-      const stock = await adjustProductStock(product.id, amount);
+      const stock = await adjustProductStock(product.id, direction * quantity);
       setProducts((currentProducts) =>
         currentProducts.map((currentProduct) =>
           currentProduct.id === product.id
@@ -103,7 +110,9 @@ export default function AdminProducts() {
     } catch (adjustError) {
       console.error("No se pudo ajustar el stock:", adjustError);
       setStockError(
-        `No se pudo actualizar el stock de "${product.name}". Revisá los permisos de Firestore e intentá nuevamente.`
+        adjustError.message === "El stock no puede ser menor que cero."
+          ? `No se puede restar esa cantidad: "${product.name}" solo tiene ${product.stock ?? 0} unidades.`
+          : `No se pudo actualizar el stock de "${product.name}". Revisá los permisos de Firestore e intentá nuevamente.`
       );
     } finally {
       setUpdatingStockId("");
@@ -347,9 +356,27 @@ export default function AdminProducts() {
                 </p>
               </div>
               <div className="admin-products__stock-actions">
+                <label htmlFor={`stock-adjustment-${product.id}`}>
+                  Cantidad
+                </label>
+                <input
+                  id={`stock-adjustment-${product.id}`}
+                  type="number"
+                  min="1"
+                  step="1"
+                  value={stockAdjustmentAmounts[product.id] ?? "1"}
+                  onChange={(event) =>
+                    setStockAdjustmentAmounts((currentAmounts) => ({
+                      ...currentAmounts,
+                      [product.id]: event.target.value,
+                    }))
+                  }
+                  disabled={Boolean(deletingId || deletingCategory || updatingStockId)}
+                  aria-label={`Cantidad de stock a ajustar para ${product.name}`}
+                />
                 <button
                   type="button"
-                  aria-label={`Restar una unidad de stock de ${product.name}`}
+                  aria-label={`Restar cantidad indicada del stock de ${product.name}`}
                   disabled={
                     Boolean(deletingId || deletingCategory || updatingStockId) ||
                     !Number.isInteger(product.stock) ||
@@ -361,7 +388,7 @@ export default function AdminProducts() {
                 </button>
                 <button
                   type="button"
-                  aria-label={`Sumar una unidad de stock de ${product.name}`}
+                  aria-label={`Sumar cantidad indicada al stock de ${product.name}`}
                   disabled={Boolean(deletingId || deletingCategory || updatingStockId)}
                   onClick={() => handleAdjustStock(product, 1)}
                 >
