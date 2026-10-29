@@ -95,7 +95,11 @@ export const CartProvider = ({ children }) => {
     }));
 
     try {
-      await createOrder({ customer, items });
+      const total = items.reduce(
+        (sum, item) => sum + item.price * item.quantity,
+        0
+      );
+      await createOrder({ customer, items, total });
     } catch (error) {
       if (error.code === "insufficient-stock") {
         const stockError = new Error(t("stockUnavailable"));
