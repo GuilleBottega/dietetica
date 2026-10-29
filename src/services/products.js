@@ -131,47 +131,6 @@ export const updateProduct = async (id, productData) => {
   }
 };
 
-export const adjustProductStock = async (id, amount) => {
-  if (!Number.isInteger(amount) || amount === 0) {
-    throw new Error("El ajuste de stock debe ser un entero distinto de cero.");
-  }
-
-  try {
-    const productRef = doc(productsRef, id);
-    const productSnapshot = await getDoc(productRef);
-    if (!productSnapshot.exists()) {
-      throw new Error("No se encontró el producto.");
-    }
-
-    const product = productSnapshot.data();
-    const parsedStock = Number(product.stock);
-    const currentStock =
-      Number.isSafeInteger(parsedStock) && parsedStock >= 0 ? parsedStock : 0;
-    const storedCapacity = product.stockCapacity;
-    const currentCapacity =
-      Number.isSafeInteger(storedCapacity) && storedCapacity >= currentStock
-        ? storedCapacity
-        : currentStock;
-    const nextStock = currentStock + amount;
-    if (nextStock < 0) {
-      throw new Error("El stock no puede ser menor que cero.");
-    }
-
-    const stockUpdate = { stock: nextStock };
-    if (Number.isSafeInteger(storedCapacity)) {
-      stockUpdate.stockCapacity = Math.max(currentCapacity, nextStock);
-    }
-
-    const batch = writeBatch(db);
-    batch.update(productRef, stockUpdate);
-    await batch.commit();
-    return nextStock;
-  } catch (error) {
-    console.error("No se pudo ajustar el stock del producto:", error);
-    throw error;
-  }
-};
-
 export const deleteProduct = async (id) => {
   try {
     await deleteDoc(doc(productsRef, id));
