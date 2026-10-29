@@ -23,9 +23,10 @@ export const getProducts = async () => {
  
     const snapshot = await getDocs(productsRef);
 
-    const productsFormat = snapshot.docs.map((doc) => {
-      return { id: doc.id, ...doc.data() };
-    });
+    const productsFormat = snapshot.docs.map((productDocument) => ({
+      ...productDocument.data(),
+      id: productDocument.id,
+    }));
 
     return productsFormat;
   } catch (error) {
@@ -48,7 +49,7 @@ export const getProductById = async (id) => {
 
     
     if (snapshot.exists()) {
-      const product = { id: snapshot.id, ...snapshot.data() };
+      const product = { ...snapshot.data(), id: snapshot.id };
       console.log("Doc:", product);
       return product;
     } else {
@@ -77,9 +78,10 @@ export const getByCategory = async (category) => {
    
     const snapshot = await getDocs(queryRef);
     
-    const productsFormat = snapshot.docs.map((doc) => {
-      return { id: doc.id, ...doc.data() };
-    });
+    const productsFormat = snapshot.docs.map((productDocument) => ({
+      ...productDocument.data(),
+      id: productDocument.id,
+    }));
     return productsFormat;
   } catch (error) {
     console.error("Error al filtrar productos:", error);

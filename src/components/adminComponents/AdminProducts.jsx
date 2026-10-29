@@ -112,7 +112,9 @@ export default function AdminProducts() {
       setStockError(
         adjustError.message === "El stock no puede ser menor que cero."
           ? `No se puede restar esa cantidad: "${product.name}" solo tiene ${product.stock ?? 0} unidades.`
-          : `No se pudo actualizar el stock de "${product.name}". Revisá los permisos de Firestore e intentá nuevamente.`
+          : `No se pudo actualizar el stock de "${product.name}"${
+              adjustError.code ? ` (${adjustError.code})` : ""
+            }: ${adjustError.message || "Revisá los permisos de Firestore e intentá nuevamente."}`
       );
     } finally {
       setUpdatingStockId("");
