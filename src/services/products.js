@@ -15,6 +15,25 @@ import { setCategory } from "./categories.js";
 
 const productsRef = collection(db, "products");
 
+const normalizeProduct = (productDocument) => {
+  const data = productDocument.data();
+  const parsedStock = Number(data.stock);
+  const stock =
+    Number.isSafeInteger(parsedStock) && parsedStock >= 0 ? parsedStock : 0;
+  const parsedCapacity = Number(data.stockCapacity);
+  const stockCapacity =
+    Number.isSafeInteger(parsedCapacity) && parsedCapacity >= stock
+      ? parsedCapacity
+      : stock;
+
+  return {
+    ...data,
+    stock,
+    stockCapacity,
+    id: productDocument.id,
+  };
+};
+
 /* -------------------------------------------------------------------------- */
 /*                               TRAER PRODUCTOS                              */
 /* -------------------------------------------------------------------------- */
@@ -23,10 +42,7 @@ export const getProducts = async () => {
  
     const snapshot = await getDocs(productsRef);
 
-    const productsFormat = snapshot.docs.map((productDocument) => ({
-      ...productDocument.data(),
-      id: productDocument.id,
-    }));
+    const productsFormat = snapshot.docs.map(normalizeProduct);
 
     return productsFormat;
   } catch (error) {
@@ -49,7 +65,7 @@ export const getProductById = async (id) => {
 
     
     if (snapshot.exists()) {
-      const product = { ...snapshot.data(), id: snapshot.id };
+      const product = normalizeProduct(snapshot);
       console.log("Doc:", product);
       return product;
     } else {
@@ -78,10 +94,7 @@ export const getByCategory = async (category) => {
    
     const snapshot = await getDocs(queryRef);
     
-    const productsFormat = snapshot.docs.map((productDocument) => ({
-      ...productDocument.data(),
-      id: productDocument.id,
-    }));
+    const productsFormat = snapshot.docs.map(normalizeProduct);
     return productsFormat;
   } catch (error) {
     console.error("Error al filtrar productos:", error);
@@ -132,12 +145,13 @@ export const adjustProductStock = async (id, amount) => {
         throw new Error("No se encontró el producto.");
       }
 
-      const storedStock = productSnapshot.data().stock;
+      const product = productSnapshot.data();
+      const parsedStock = Number(product.stock);
       const currentStock =
-        Number.isInteger(storedStock) && storedStock >= 0 ? storedStock : 0;
-      const storedCapacity = productSnapshot.data().stockCapacity;
+        Number.isSafeInteger(parsedStock) && parsedStock >= 0 ? parsedStock : 0;
+      const storedCapacity = product.stockCapacity;
       const currentCapacity =
-        Number.isInteger(storedCapacity) && storedCapacity >= currentStock
+        Number.isSafeInteger(storedCapacity) && storedCapacity >= currentStock
           ? storedCapacity
           : currentStock;
       const nextStock = currentStock + amount;
@@ -145,10 +159,12 @@ export const adjustProductStock = async (id, amount) => {
         throw new Error("El stock no puede ser menor que cero.");
       }
 
-      transaction.update(productRef, {
-        stock: nextStock,
-        stockCapacity: Math.max(currentCapacity, nextStock),
-      });
+      const stockUpdate = { stock: nextStock };
+      if (Number.isSafeInteger(storedCapacity)) {
+        stockUpdate.stockCapacity = Math.max(currentCapacity, nextStock);
+      }
+
+      transaction.update(productRef, stockUpdate);
       return nextStock;
     });
   } catch (error) {
