@@ -21,3 +21,7 @@ El proyecto puede desplegarse tanto en Netlify como en Vercel. En ambos servicio
 
 - **Netlify:** la configuración de `netlify.toml` y `public/_redirects` mantiene las rutas de React disponibles al abrir o recargar una URL directamente.
 - **Vercel:** `vercel.json` configura el build y redirige las rutas de la aplicación a `index.html`, necesario para React Router.
+
+## Imágenes de productos
+
+Las imágenes nuevas se suben a ImgBB y se guarda la URL directa del archivo. Configurá `VITE_IMGBB_API_KEY` en el entorno local y en el servicio de despliegue. Los enlaces a páginas de visualización de ImgBB usan las copias locales de `public/img` cuando están disponibles; los enlaces directos de imagen permanecen alojados en ImgBB.

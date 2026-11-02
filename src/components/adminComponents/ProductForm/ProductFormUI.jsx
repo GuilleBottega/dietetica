@@ -1,3 +1,5 @@
+import { getProductImage } from "../../../utils/productImage.js";
+
 export const ProductFormUI = ({
   product,
   errors,
@@ -129,7 +131,7 @@ export const ProductFormUI = ({
           {isEditing && existingImage && (
             <img
               className="product-form__image-preview"
-              src={existingImage}
+              src={getProductImage(existingImage, product.name)}
               alt={`Imagen actual de ${product.name}`}
             />
           )}

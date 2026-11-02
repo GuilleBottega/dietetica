@@ -10,6 +10,7 @@ import {
   initializeCategories,
   updateCategory,
 } from "../../services/categories.js";
+import { getProductImage } from "../../utils/productImage.js";
 import "./AdminProducts.css";
 
 export default function AdminProducts() {
@@ -427,7 +428,11 @@ export default function AdminProducts() {
                 <span>Incluir en PDF</span>
               </label>
               {product.image && (
-                <img src={product.image} alt="" loading="lazy" />
+                <img
+                  src={getProductImage(product.image, product.name)}
+                  alt=""
+                  loading="lazy"
+                />
               )}
               <div className="admin-products__details">
                 <h2>{product.name}</h2>

@@ -1,5 +1,6 @@
 import "./Item.css";
 import { useLanguage } from "../../context/useLanguage.js";
+import { getProductImage } from "../../utils/productImage.js";
 
 export const Item = ({
   id,
@@ -21,7 +22,7 @@ export const Item = ({
 
   return (
     <article className="card">
-      <img src={image} alt={translated.name} />
+      <img src={getProductImage(image, name)} alt={translated.name} />
       <h3>{translated.name}</h3>
       <p>{translated.description}</p>
       <p className={`card__stock card__stock--${stockStatus}`}>

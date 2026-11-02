@@ -14,18 +14,25 @@ export const uploadImage = async (file) => {
   formData.append("image", file);
 
   try {
-    const response = await fetch(`${ENDPOINT}?key=${encodeURIComponent(apiKey)}`, {
-      method: "POST",
-      body: formData,
-    });
-
+    const response = await fetch(
+      `${ENDPOINT}?key=${encodeURIComponent(apiKey)}`,
+      {
+        method: "POST",
+        body: formData,
+      }
+    );
     const data = await response.json();
 
     if (!response.ok || !data.success) {
       throw new Error(data.error?.message ?? "Error al subir la imagen a ImgBB.");
     }
 
-    return data.data.url;
+    const imageUrl = data.data?.image?.url ?? data.data?.display_url;
+    if (typeof imageUrl !== "string" || !/^https?:\/\//i.test(imageUrl)) {
+      throw new Error("ImgBB no devolvió una URL directa de la imagen.");
+    }
+
+    return imageUrl;
   } catch (error) {
     console.error("ImgBB error:", error);
     throw error;
