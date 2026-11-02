@@ -54,7 +54,11 @@ export const CartProvider = ({ children }) => {
       if (existingItem) {
         return prev.map((element) =>
           String(element.id) === productId
-            ? { ...element, quantity: currentQuantity + allowedQuantity }
+            ? {
+                ...element,
+                ...item,
+                quantity: currentQuantity + allowedQuantity,
+              }
             : element
         );
       }
