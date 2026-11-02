@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useCart } from "../../context/CartContext";
 import { useLanguage } from "../../context/useLanguage.js";
-import { getProductImage } from "../../utils/productImage.js";
+import { ProductImage } from "../ProductImage.jsx";
 import "./Cart.css";
 
 const Cart = () => {
@@ -59,8 +59,9 @@ const Cart = () => {
 
           return (
             <article key={product.id} className="card cart-item">
-              <img
-                src={getProductImage(product.image, product.name)}
+              <ProductImage
+                image={product.image}
+                name={product.name}
                 alt={translated.name}
               />
               <h3>{translated.name}</h3>

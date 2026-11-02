@@ -1,4 +1,4 @@
-import { getProductImage } from "../../../utils/productImage.js";
+import { ProductImage } from "../../ProductImage.jsx";
 
 export const ProductFormUI = ({
   product,
@@ -129,9 +129,10 @@ export const ProductFormUI = ({
             onChange={onFileChange}
           />
           {isEditing && existingImage && (
-            <img
+            <ProductImage
               className="product-form__image-preview"
-              src={getProductImage(existingImage, product.name)}
+              image={existingImage}
+              name={product.name}
               alt={`Imagen actual de ${product.name}`}
             />
           )}

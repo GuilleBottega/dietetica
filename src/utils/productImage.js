@@ -26,18 +26,22 @@ const normalizeProductName = (name) =>
     .trim()
     .toLowerCase();
 
-export const getProductImage = (image, name) => {
+export const getLocalProductImage = (name) => {
   const normalizedName = normalizeProductName(name);
-  const localImage = Object.hasOwn(localProductImages, normalizedName)
+  return Object.hasOwn(localProductImages, normalizedName)
     ? localProductImages[normalizedName]
-    : undefined;
+    : "";
+};
+
+export const getProductImage = (image, name) => {
+  const localImage = getLocalProductImage(name);
 
   if (typeof image !== "string" || !image.trim()) {
-    return localImage ?? "";
+    return localImage;
   }
 
   if (/^https?:\/\/(?:www\.)?(?:imgbb\.com|ibb\.co)(?:\/|$)/i.test(image)) {
-    return localImage ?? image;
+    return localImage || image;
   }
 
   return image;
