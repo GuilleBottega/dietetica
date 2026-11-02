@@ -36,9 +36,7 @@ export const getProductImage = (image, name) => {
     return localImage ?? "";
   }
 
-  if (
-    /^https?:\/\/(?:[a-z0-9-]+\.)*(?:imgbb\.com|ibb\.co)(?:\/|$)/i.test(image)
-  ) {
+  if (/^https?:\/\/(?:www\.)?(?:imgbb\.com|ibb\.co)(?:\/|$)/i.test(image)) {
     return localImage ?? image;
   }
 
