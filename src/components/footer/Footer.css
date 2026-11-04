@@ -11,7 +11,11 @@
 }
 
 .site-footer p {
-  margin: 1;
+  margin: 0;
+}
+
+.site-footer__datetime {
+  text-align: center;
 }
 
 .site-footer a {

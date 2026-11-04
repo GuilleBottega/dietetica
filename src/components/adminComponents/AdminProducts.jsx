@@ -11,6 +11,7 @@ import {
   updateCategory,
 } from "../../services/categories.js";
 import { ProductImage } from "../ProductImage.jsx";
+import { ActionSpinner } from "../ActionSpinner.jsx";
 import "./AdminProducts.css";
 
 export default function AdminProducts() {
@@ -319,7 +320,7 @@ export default function AdminProducts() {
               disabled={savingCategory || Boolean(deletingId || deletingCategory)}
             >
               {savingCategory
-                ? "Guardando..."
+                ? <><ActionSpinner /> Guardando...</>
                 : editingCategory
                   ? "Guardar cambios"
                   : "Agregar categoría"}
@@ -367,7 +368,7 @@ export default function AdminProducts() {
                       onClick={() => handleDeleteCategory(category)}
                     >
                       {deletingCategory === category
-                        ? "Eliminando..."
+                        ? <><ActionSpinner /> Eliminando...</>
                         : "Eliminar categoría"}
                     </button>
                   </div>
@@ -457,7 +458,9 @@ export default function AdminProducts() {
                 disabled={Boolean(deletingId || deletingCategory)}
                 onClick={() => handleDelete(product)}
               >
-                {deletingId === product.id ? "Eliminando..." : "Eliminar"}
+                {deletingId === product.id
+                  ? <><ActionSpinner /> Eliminando...</>
+                  : "Eliminar"}
               </button>
             </li>
           ))}

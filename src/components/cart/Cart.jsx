@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useCart } from "../../context/useCart.js";
 import { useLanguage } from "../../context/useLanguage.js";
 import { ProductImage } from "../ProductImage.jsx";
+import { ActionSpinner } from "../ActionSpinner.jsx";
 import "./Cart.css";
 
 const Cart = () => {
@@ -118,7 +119,7 @@ const Cart = () => {
               type="submit"
               disabled={isCheckingOut}
             >
-              {isCheckingOut ? t("savingOrder") : t("checkout")}
+              {isCheckingOut ? <><ActionSpinner /> {t("savingOrder")}</> : t("checkout")}
             </button>
           </div>
         </div>

@@ -1,4 +1,5 @@
 import { ProductImage } from "../../ProductImage.jsx";
+import { ActionSpinner } from "../../ActionSpinner.jsx";
 
 export const ProductFormUI = ({
   product,
@@ -145,7 +146,7 @@ export const ProductFormUI = ({
           disabled={loading || categoriesLoading}
         >
           {loading
-            ? "Guardando..."
+            ? <><ActionSpinner /> Guardando...</>
             : categoriesLoading
               ? "Cargando categorías..."
               : isEditing

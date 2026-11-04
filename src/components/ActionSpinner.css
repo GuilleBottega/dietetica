@@ -1,0 +1,17 @@
+.action-spinner {
+  display: inline-block;
+  line-height: 1;
+  animation: action-spinner-flip 1s steps(2, end) infinite;
+}
+
+@keyframes action-spinner-flip {
+  to {
+    transform: rotate(180deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .action-spinner {
+    animation-duration: 2s;
+  }
+}

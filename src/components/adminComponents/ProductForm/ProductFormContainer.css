@@ -189,6 +189,9 @@
 }
 
 .product-form button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   justify-self: start;
   margin-top: 20px;
   padding: 13px 24px;
