@@ -1,24 +1,8 @@
-import { createContext, useContext, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "./useLanguage.js";
 import { createOrder } from "../services/orders.js";
-
-/* -------------------------------------------------------------------------- */
-/*                              CREAMOS CONTEXTO                              */
-/* -------------------------------------------------------------------------- */
-const CartContext = createContext();
-
-/* -------------------------------------------------------------------------- */
-/*                                 CUSTOM HOOK                                */
-/* -------------------------------------------------------------------------- */
-export const useCart = () => {
-  const context = useContext(CartContext);
-
-  if (!context) {
-    throw new Error("useCart debe usarse dentro de un CartProvider");
-  }
-  return context;
-};
+import { CartContext } from "./cartContext.js";
 
 /* -------------------------------------------------------------------------- */
 /*                                  PROVEEDOR                                 */
@@ -27,11 +11,6 @@ export const CartProvider = ({ children }) => {
   const navigate = useNavigate();
   const { t } = useLanguage();
   const [cart, setCart] = useState([]);
-
-  const isInCart = (item) => {
-    const inCart = cart.some((element) => String(element.id) === String(item.id));
-    return inCart;
-  };
 
   const addItem = (item, quantity = 1) => {
     const quantityToAdd = Math.max(1, Math.floor(Number(quantity) || 1));

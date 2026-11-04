@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { ItemList } from "../ItemList/ItemList";
 import { useLanguage } from "../../context/useLanguage.js";
 import { getProducts } from "../../services/products";
+import { LoadingSpinner } from "../LoadingSpinner";
 
 export const ItemListContainer = () => {
   const { category } = useParams();
@@ -18,7 +19,7 @@ export const ItemListContainer = () => {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <p>{t("loading")}</p>;
+  if (loading) return <LoadingSpinner label={t("loading")} />;
   if (errors) return <p>{t("loadProductsError")}</p>;
 
   const visibleProducts = category

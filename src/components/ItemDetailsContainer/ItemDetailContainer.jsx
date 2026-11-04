@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { ItemDetail } from "../ItemDetails/ItemDetail";
 import { useLanguage } from "../../context/useLanguage.js";
 import { getProductById } from "../../services/products";
+import { LoadingSpinner } from "../LoadingSpinner";
 
 export const ItemDetailContainer = () => {
   const { id } = useParams();
@@ -29,7 +30,7 @@ export const ItemDetailContainer = () => {
     };
   }, [id]);
 
-  if (result.id !== id) return <p>{t("loading")}</p>;
+  if (result.id !== id) return <LoadingSpinner label={t("loading")} />;
   if (result.error === "not-found") return <p>{t("productNotFound")}</p>;
   if (result.error) return <p>{t("loadProductsError")}</p>;
   if (!result.item) return <p>{t("productNotFound")}</p>;

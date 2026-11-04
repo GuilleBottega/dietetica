@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { useCart } from "../../context/CartContext";
+import { useCart } from "../../context/useCart.js";
 import { useLanguage } from "../../context/useLanguage.js";
 import { defaultCategories, getCategories } from "../../services/categories.js";
 import "./Nav.css";
